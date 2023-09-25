@@ -5,92 +5,79 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:layout_gravity="center"
     tools:context=".MainActivity">
-
-    <TextView
-        android:id="@+id/Title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="80dp"
-        android:text="BMI CALCULATOR"
-        android:textSize="34sp" />
-
-    <TextView
-        android:id="@+id/HeightTv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginBottom="20dp"
-        android:text="Your Height in Cm"
-        android:textSize="16sp" />
-
-    <EditText
-        android:id="@+id/HeightTb"
-        android:layout_width="319dp"
-        android:layout_height="48dp"
-        android:layout_gravity="center"
-        android:layout_marginBottom="20dp"
-        android:inputType="text"
-        android:text="165"
-        tools:ignore="MissingConstraints" />
-
-    <TextView
-        android:id="@+id/WeightTv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="40dp"
-        android:layout_marginBottom="20dp"
-        android:text="Your Weight in Kg"
-        android:textSize="16sp" />
-
-    <EditText
-        android:id="@+id/WeightTb"
-        android:layout_width="319dp"
-        android:layout_height="48dp"
-        android:layout_gravity="center"
-        android:inputType="text"
-        android:text="165"
-        tools:ignore="MissingConstraints" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="314dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:background="#0084E3"
-        android:onClick="CalculateClick"
-        android:text="CALCULATE"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#000000"
-        android:textSize="24sp" />
-
-    <TextView
-        android:id="@+id/textView5"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="YOUR RESULT"
-        android:textAlignment="center"
-        android:textSize="34sp" />
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:paddingTop="30dp"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/Point"
+        <EditText
+            android:id="@+id/num1"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="3"
+            android:textSize="34sp"></EditText>
+
+        <EditText
+            android:id="@+id/num2"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="2"
+            android:textSize="34sp"></EditText>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:text="23.5"
-        android:textAlignment="center"
-        android:textSize="34sp" />
+
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnplus"
+            android:layout_width="65dp"
+            android:layout_height="match_parent"
+            android:onClick="Action"
+            android:text="+"
+            android:textSize="34sp" />
+
+        <Button
+            android:id="@+id/btnminus"
+            android:layout_width="65dp"
+            android:layout_height="wrap_content"
+            android:onClick="Action"
+            android:text="-"
+            android:textSize="34sp" />
+
+        <Button
+            android:id="@+id/btnmulti"
+            android:layout_width="65dp"
+            android:layout_height="wrap_content"
+            android:onClick="Action"
+            android:text="*"
+            android:textSize="34sp" />
+
+        <Button
+            android:id="@+id/btndivision"
+            android:layout_width="65dp"
+            android:layout_height="wrap_content"
+            android:onClick="Action"
+            android:text="/"
+            android:textSize="34sp" />
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/Status"
+        android:id="@+id/result"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Normal"
-        android:textAlignment="center"
-        android:textSize="34sp" />
-
+        android:layout_marginTop="50dp"
+        android:gravity="center_horizontal"
+        android:text="The Result"
+        android:textSize="60sp"></TextView>
 </LinearLayout>
