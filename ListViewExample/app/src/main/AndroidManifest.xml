@@ -10,14 +10,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Real_Time_Tracker"
+        android:theme="@style/Theme.ListViewExample"
         tools:targetApi="31">
-        <activity
-            android:name=".RegisterActivity"
-            android:exported="false" />
-        <activity
-            android:name=".LoginAcitivity"
-            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
