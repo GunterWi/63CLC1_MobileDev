@@ -1,4 +1,4 @@
-package com.example.real_time_tracker;
+package com.nguyenquocthai.real_time_tracker;
 
 import android.content.Context;
 

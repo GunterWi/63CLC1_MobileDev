@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginAcitivity" >
+    android:background="#FFFFFF"
+    tools:context="com.nguyenquocthai.real_time_tracker.LoginAcitivity">
 
     <TextView
         android:id="@+id/titleLogin"
@@ -20,8 +21,19 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.119" />
 
+    <TextView
+        android:id="@+id/emailv"
+        android:layout_width="280dp"
+        android:layout_height="25dp"
+        android:layout_marginBottom="12dp"
+        android:text="Email"
+        app:layout_constraintBottom_toTopOf="@+id/emailLoginV"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <EditText
-        android:id="@+id/emailtv"
+        android:id="@+id/emailLoginV"
         android:layout_width="280dp"
         android:layout_height="55dp"
         android:background="@drawable/rounded_edittext"
@@ -31,22 +43,24 @@
         android:paddingStart="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.301" />
+        app:layout_constraintVertical_bias="0.33" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/passv"
         android:layout_width="280dp"
         android:layout_height="25dp"
-        android:layout_marginBottom="10dp"
-        android:text="Email"
-        app:layout_constraintBottom_toTopOf="@+id/emailtv"
+        android:layout_marginBottom="8dp"
+        android:text="Password"
+        app:layout_constraintBottom_toTopOf="@+id/passLoginV"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/passtv"
+        android:id="@+id/passLoginV"
         android:layout_width="280dp"
         android:layout_height="55dp"
         android:background="@drawable/rounded_edittext"
@@ -56,31 +70,44 @@
         android:paddingStart="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/emailtv"
-        app:layout_constraintVertical_bias="0.185" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="280dp"
-        android:layout_height="25dp"
-        android:layout_marginBottom="10dp"
-        android:text="Password"
-        app:layout_constraintBottom_toTopOf="@+id/passtv"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/emailLoginV"
+        app:layout_constraintVertical_bias="0.193" />
 
     <Button
-        android:id="@+id/button"
-        android:layout_width="114dp"
+        android:id="@+id/submitLoginbtn"
+        android:layout_width="280dp"
         android:layout_height="59dp"
-        android:layout_marginBottom="264dp"
-        android:text="Button"
+        android:backgroundTint="#1877F2"
+        android:text="Log in"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/passLoginV"
+        app:layout_constraintVertical_bias="0.138" />
+
+    <TextView
+        android:id="@+id/dontAcc"
+        android:layout_width="234dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="122dp"
+        android:text="Don't have an account Sign Up Here"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="#00C4FF"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passtv"
-        app:layout_constraintVertical_bias="0.663" />
+        app:layout_constraintTop_toBottomOf="@+id/submitLoginbtn"
+        app:layout_constraintVertical_bias="0.014" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
