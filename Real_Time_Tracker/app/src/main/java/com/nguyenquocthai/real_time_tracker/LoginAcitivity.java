@@ -56,10 +56,10 @@ public class LoginAcitivity extends AppCompatActivity {
 
 
     private void Initiation() {
-        email = findViewById(R.id.emailLoginV);
-        password = findViewById(R.id.passLoginV);
-        login = findViewById(R.id.submitLoginbtn);
-        createAccount= findViewById(R.id.dontAcc);
+        email = findViewById(R.id.edittext_email);
+        password = findViewById(R.id.edittext_password);
+        login = findViewById(R.id.login_button);
+        createAccount= findViewById(R.id.logtosign);
         auth = FirebaseAuth.getInstance();
     }
 

@@ -80,10 +80,10 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void Initiation() {
-        email = findViewById(R.id.emailRegisV);
-        password = findViewById(R.id.passRegisV);
-        register = findViewById(R.id.submitRegisbtn);
-        loginAcc = findViewById(R.id.alreadyAcc);
+        email = findViewById(R.id.edittext_signemail);
+        password = findViewById(R.id.edittext_signpassword);
+        register = findViewById(R.id.signup_button);
+        loginAcc = findViewById(R.id.signtolog_txt);
         auth = FirebaseAuth.getInstance();
     }
 
