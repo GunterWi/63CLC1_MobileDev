@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context="com.nguyenquocthai.real_time_tracker.LoginAcitivity">
+    tools:context="com.nguyenquocthai.real_time_tracker.Activity.LoginAcitivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

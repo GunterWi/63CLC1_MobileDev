@@ -5,6 +5,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.nguyenquocthai.real_time_tracker.MainActivity">
+    tools:context="com.nguyenquocthai.real_time_tracker.Activity.MainActivity">
 
   </androidx.constraintlayout.widget.ConstraintLayout>

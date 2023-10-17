@@ -1,4 +1,4 @@
-package com.nguyenquocthai.real_time_tracker;
+package com.nguyenquocthai.real_time_tracker.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;

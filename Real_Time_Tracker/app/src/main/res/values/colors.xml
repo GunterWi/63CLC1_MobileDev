@@ -9,6 +9,7 @@
     <color name="white">#ffffff</color>
     <color name="LowOpasityBlack">#80000000</color>
     <color name="Grey">#80707070</color>
+    <color name="LightGrey">#EFEEEE</color>
     <color name="PurpleLight">#D3C6F5</color>
     <color name="PurpleDark">#A07BFF</color>
 </resources>
