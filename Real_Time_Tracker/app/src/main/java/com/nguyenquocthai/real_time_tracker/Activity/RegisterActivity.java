@@ -51,27 +51,41 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void registerUser(String email, String password, String firstname, String lastname) {
-        auth.fetchSignInMethodsForEmail(email).addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
-            @Override
-            public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
-                if (task.isSuccessful()) {
-                    SignInMethodQueryResult result = task.getResult();
-                    if (result.getSignInMethods() != null && result.getSignInMethods().size() > 0) {
-                        // Tài khoản đã tồn tại
-                        Toast.makeText(RegisterActivity.this, "Account already exists!", Toast.LENGTH_LONG).show();
-                    } else {
-                        Intent myIntent=new Intent(RegisterActivity.this,ConfirmActivity.class);
-                        myIntent.putExtra("email",email);
-                        myIntent.putExtra("password",password);
-                        myIntent.putExtra("firstname",firstname);
-                        myIntent.putExtra("lastname",lastname);
-                        startActivity(myIntent);
+        if (!isButtonClicked) {
+            isButtonClicked = true; // Đánh dấu rằng button đã được click
+
+            // Thực hiện công việc cần thiết ở đây
+            auth.fetchSignInMethodsForEmail(email).addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
+                @Override
+                public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
+                    try {
+                        if (task.isSuccessful()) {
+                            SignInMethodQueryResult result = task.getResult();
+                            if (result.getSignInMethods() != null && result.getSignInMethods().size() > 0) {
+                                // Tài khoản đã tồn tại
+                                Toast.makeText(RegisterActivity.this, "Account already exists!", Toast.LENGTH_LONG).show();
+                            } else {
+                                Intent myIntent = new Intent(RegisterActivity.this, ConfirmActivity.class);
+                                myIntent.putExtra("email", email);
+                                myIntent.putExtra("password", password);
+                                myIntent.putExtra("firstname", firstname);
+                                myIntent.putExtra("lastname", lastname);
+                                startActivity(myIntent);
+                            }
+                        } else {
+                            // Xử lý lỗi nếu có
+                            Toast.makeText(RegisterActivity.this,task.getException().toString(),Toast.LENGTH_LONG).show();
+                            throw task.getException();
+                        }
+                    } catch (Exception e) {
+                        // Xử lý trường hợp tắt mạng hoặc lỗi kết nối
+                        Toast.makeText(RegisterActivity.this, "Network error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    } finally {
+                        isButtonClicked = false;
                     }
-                } else {
-                    Toast.makeText(RegisterActivity.this, "Error checking account: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                 }
-            }
-        });
+            });
+        }
     }
 
     private void Initiation() {
@@ -92,4 +106,6 @@ public class RegisterActivity extends AppCompatActivity {
     private Button register;
     private FirebaseAuth auth;
     private TextView loginAcc;
+    private boolean isButtonClicked = false; // Biến cờ để kiểm tra đã click hay chưa
+
 }

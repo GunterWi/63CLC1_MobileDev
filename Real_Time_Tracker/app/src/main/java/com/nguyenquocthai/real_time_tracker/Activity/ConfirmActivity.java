@@ -39,10 +39,12 @@ public class ConfirmActivity extends AppCompatActivity {
         if(myIntent!=null){
             email=myIntent.getStringExtra("email");
             readEmail.setText(email);
-
             password=myIntent.getStringExtra("password");
+            readPassword.setText(password);
             firstname=myIntent.getStringExtra("firstname");
+            readFirstName.setText(firstname);
             lastname=myIntent.getStringExtra("lastname");
+            readLastName.setText(lastname);
         }
         circleImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,7 +55,7 @@ public class ConfirmActivity extends AppCompatActivity {
                 startActivityForResult(i,12);
             }
         });
-        generatorCode();
+        confirmUser();
     }
     private void confirmUser(String email, String password) {
         auth.createUserWithEmailAndPassword(email, password)
@@ -68,14 +70,11 @@ public class ConfirmActivity extends AppCompatActivity {
                     }
                 });
     }
-    private void generatorCode(){
+    private void confirmUser(){
         Date mydate = new Date();
         SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss a", Locale.getDefault());
         String date = format1.format(mydate);
-        Random rnd=new Random();
-        int n=100000+rnd.nextInt(900000);
-        String code = String.valueOf(n);
-        Code.setText(code);
+        Code.setText(generateCode());
         /*if(resultUri!=null){
 
         }
@@ -104,6 +103,12 @@ public class ConfirmActivity extends AppCompatActivity {
             }
         }
 
+    }
+    private String generateCode() {
+        Random r = new Random();
+        int intcode = 100000 + r.nextInt(900000);
+        String code = String.valueOf(intcode);
+        return code;
     }
 
     private void Initiation() {
