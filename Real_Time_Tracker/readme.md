@@ -7,6 +7,7 @@
 
  ***Quá trình thực hiện bài tập***
  ### Real Time Tracker
+ - Dự án chia sẻ vị trí lẫn nhau trong gia đình,bạn bè.
  - TIến độ hoàn thành dự án
  ![](https://geps.dev/progress/30)
  ![image](https://media.discordapp.net/attachments/1013818251580551170/1164047275077668884/image.png)
@@ -34,10 +35,13 @@
         });
     }
     ```
-    ***Khi người dùng nhập thông tin tài khoản đã tạo và rồi nhấn Log in***
-   ![image](https://media.discordapp.net/attachments/1013818251580551170/1164056603734065162/image.png)
     
-     *Sự kiện button `register`*
+    ***Khi người dùng nhập thông tin tài khoản đã tạo và rồi nhấn Log in***
+
+![image](https://media.discordapp.net/attachments/1013818251580551170/1164056603734065162/image.png)
+    
+ * Sự kiện button `register`
+ 
     ```java
         private void registerUser(String email, String password, String firstname, String lastname) {
         if (!isButtonClicked) {
@@ -88,14 +92,14 @@
             }
         });
    ```
-   
-    createAccount.setOnClickListener(new View.OnClickListener() {
+   ```java
+   createAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(LoginAcitivity.this,RegisterActivity.class));
             }
         });
-    ```
+   ```
    
 - Truyền tên, email,password qua ConfirmActivity để xác nhận lại lần cuối và chọn avatar
    ![image](https://media.discordapp.net/attachments/1013818251580551170/1164051821556404284/image.png)
