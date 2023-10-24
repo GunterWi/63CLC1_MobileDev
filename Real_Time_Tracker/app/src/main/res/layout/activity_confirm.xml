@@ -129,23 +129,29 @@
                 android:minHeight="48dp"
                 android:paddingStart="10dp"
                 android:text="Only read" />
-
-            <EditText
-                android:id="@+id/editText_readpassword"
-                android:layout_width="353dp"
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
-                android:background="@drawable/rounded_edittext"
-                android:backgroundTint="@color/LightGrey"
-                android:backgroundTintMode="multiply"
-                android:drawableStart="@drawable/ic_lock_black_24dp"
-                android:drawablePadding="10dp"
-                android:editable="false"
-                android:focusable="false"
-                android:inputType="none"
-                android:minHeight="48dp"
-                android:paddingStart="10dp"
-                android:text="Only read" />
+                app:hintEnabled="false"
+                app:passwordToggleEnabled="true">
+                <EditText
+                    android:id="@+id/editText_readpassword"
+                    android:layout_width="353dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rounded_edittext"
+                    android:backgroundTint="@color/LightGrey"
+                    android:backgroundTintMode="multiply"
+                    android:drawableStart="@drawable/ic_lock_black_24dp"
+                    android:drawablePadding="10dp"
+                    android:editable="false"
+                    android:focusable="false"
+                    android:inputType="textPassword"
+                    android:minHeight="48dp"
+                    android:paddingStart="10dp"
+                    android:text="Only read" />
+            </com.google.android.material.textfield.TextInputLayout>
+
 
         </LinearLayout>
 

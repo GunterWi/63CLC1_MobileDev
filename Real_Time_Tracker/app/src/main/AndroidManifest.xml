@@ -26,7 +26,7 @@
             android:name="com.nguyenquocthai.real_time_tracker.Activity.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name="com.nguyenquocthai.real_time_tracker.Activity.LoginAcitivity"
+            android:name="com.nguyenquocthai.real_time_tracker.Activity.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
