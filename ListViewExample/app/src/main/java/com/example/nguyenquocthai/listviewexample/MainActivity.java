@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         lst.add("Kotlin");
         lst.add("Go");
         lst.add("Rust");
+        lst.add("C#");
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,lst);
         listview.setAdapter(adapter);
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
