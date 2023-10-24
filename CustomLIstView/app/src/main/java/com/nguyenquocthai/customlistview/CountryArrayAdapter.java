@@ -1,5 +1,6 @@
 package com.nguyenquocthai.customlistview;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,15 +62,18 @@ public class CountryArrayAdapter extends BaseAdapter {
         Country country = this.lstDataSource.get(i);
         itemViewHoder.countryNameView.setText(country.getCountryName());
         itemViewHoder.populationView.setText("Population: "+country.getPopulation());
-        int imageId=getMipmapResldByName(country.getCountryFlag());
-        itemViewHoder.flagView.setImageResource(imageId);
+        //cách 1
+        //int imageId=getMipmapResldByName(country.getCountryFlag());
+        //cách 2
+        itemViewHoder.flagView.setImageResource(country.getCountryFlag());
         return view;
     }
 
     //My own function for reading image ID from filename in mipmap folder
-    public int getMipmapResldByName(String resName) {
+    //cách 1
+    public int getMipmapResldByName(String resName) { // tên của file ru1 ru2 ru3
         String packageName = context.getPackageName();
-        int imgId = context.getResources().getIdentifier(resName,"mipmap",packageName);
+        int imgId = context.getResources().getIdentifier(resName,"drawable",packageName);
         return imgId;
     };
 

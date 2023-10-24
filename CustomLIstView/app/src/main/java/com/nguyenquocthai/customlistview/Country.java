@@ -2,10 +2,10 @@ package com.nguyenquocthai.customlistview;
 
 public class Country {
     private String countryName;
-    private String countryFlag;
+    private int countryFlag;
     private int population;
 
-    public Country(String countryName, String countryFlag, int population) {
+    public Country(String countryName, int countryFlag, int population) {
         this.countryName = countryName;
         this.countryFlag = countryFlag;
         this.population = population;
@@ -19,11 +19,11 @@ public class Country {
         this.countryName = countryName;
     }
 
-    public String getCountryFlag() {
+    public int getCountryFlag() {
         return countryFlag;
     }
 
-    public void setCountryFlag(String countryFlag) {
+    public void setCountryFlag(int countryFlag) {
         this.countryFlag = countryFlag;
     }
 
