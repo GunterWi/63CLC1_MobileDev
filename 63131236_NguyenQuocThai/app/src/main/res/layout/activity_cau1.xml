@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorAccent"
+    android:onClick="Action"
+    tools:context=".activity.Cau1">
+
+    <RelativeLayout
+        android:id="@+id/layoutA"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp">
+
+        <TextView
+            android:id="@+id/tvNumA"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="Số a"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/editText_NumA"
+            android:layout_width="188dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@id/tvNumA"
+            android:background="@drawable/rounded_edittext"
+            android:ems="10"
+            android:hint="so a"
+            android:inputType="text"
+            android:minHeight="48dp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layoutB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layoutA"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp">
+
+        <TextView
+            android:id="@+id/tvNumB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="số b"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/editText_NumB"
+            android:layout_width="188dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@id/tvNumB"
+            android:background="@drawable/rounded_edittext"
+            android:ems="10"
+            android:hint="so b"
+            android:inputType="text"
+            android:minHeight="48dp" />
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="176dp"
+        android:layout_height="73dp"
+        android:layout_below="@id/layoutB"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="49dp"
+        android:background="@drawable/btnbackground"
+        android:backgroundTint="#F7FF00"
+        android:onClick="Action"
+        android:text="Tính tổng a+b"
+        android:textAllCaps="false"
+        android:textSize="20sp" />
+
+    <RelativeLayout
+        android:id="@+id/layoutketqua"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp">
+
+        <TextView
+            android:id="@+id/tvKetQua"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="Kết quả"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/editText_KetQua"
+            android:layout_width="188dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@id/tvKetQua"
+            android:background="@drawable/rounded_edittext"
+            android:ems="10"
+            android:hint="kết quả"
+            android:inputType="text"
+            android:minHeight="48dp" />
+
+    </RelativeLayout>
+</RelativeLayout>

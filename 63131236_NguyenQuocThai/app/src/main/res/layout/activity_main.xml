@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorAccent"
+    tools:context=".activity.MainActivity">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp">
+
+        <Button
+            android:id="@+id/btn1"
+            android:layout_width="128dp"
+            android:layout_height="105dp"
+            android:background="@drawable/rounded_edittext"
+            android:backgroundTint="#F7FF00"
+            android:text="Câu 1"
+            android:textSize="30sp" />
+
+        <Button
+            android:id="@+id/btn3"
+            android:layout_width="128dp"
+            android:layout_height="105dp"
+            android:layout_below="@id/btn1"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/rounded_edittext"
+            android:backgroundTint="#F7FF00"
+            android:text="Câu 3"
+            android:textSize="30sp" />
+
+        <Button
+            android:id="@+id/btn2"
+            android:layout_width="128dp"
+            android:layout_height="105dp"
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@id/btn1"
+            android:background="@drawable/rounded_edittext"
+            android:backgroundTint="#F7FF00"
+            android:text="Câu 2"
+            android:textSize="30sp" />
+
+        <Button
+            android:id="@+id/btn4"
+            android:layout_width="128dp"
+            android:layout_height="105dp"
+            android:layout_below="@id/btn2"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_toEndOf="@id/btn3"
+            android:background="@drawable/rounded_edittext"
+            android:backgroundTint="#F7FF00"
+            android:text="Câu 4"
+            android:textSize="30sp" />
+    </RelativeLayout>
+</RelativeLayout>

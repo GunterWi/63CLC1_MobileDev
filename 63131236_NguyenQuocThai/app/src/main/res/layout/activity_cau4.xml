@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.Cau4">
+
+
+    <ImageView
+        android:id="@+id/profile_image"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@drawable/kitty"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp"/>
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/profile_image"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:text="Nguyễn Quốc Thái"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_birthday"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/profile_image"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="64dp"
+        android:text="Ngày sinh: 09/03/2003"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_prefernce"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_birthday"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="36dp"
+        android:text="Sinh viên năm 3"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/profile_image"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="96dp"
+        android:text="Sở thích: ngủ"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layout_link"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp"
+        android:text="Liên hệ: thai.nq.63cntt@ntu.edu.vn "
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <RelativeLayout
+        android:id="@+id/layout_link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/profile_image"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="180dp">
+
+        <ImageView
+            android:id="@+id/imageV_github"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/github" />
+
+        <ImageView
+            android:id="@+id/imageV_facebook"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_toEndOf="@id/imageV_github"
+            android:src="@drawable/facebook" />
+    </RelativeLayout>
+
+    <!-- Các thông tin khác về bản thân có thể được thêm vào ở đây -->
+
+</RelativeLayout>
