@@ -3,7 +3,11 @@ package com.nguyenquocthai.customlistview;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -25,6 +29,24 @@ public class MainActivity extends AppCompatActivity {
         ListView lvQG=findViewById(R.id.listviewPro);
         CountryArrayAdapter adapter= new CountryArrayAdapter(dsQG,this);
         lvQG.setAdapter(adapter);
+        lvQG.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            Toast currentToast = null; // Biến để lưu trạng thái của thông báo hiện tại
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int i, long l) {
+
+                //cách 1
+                //String mucChon = adapter.getItem(i);
+                //cách 2
+                String mucChon = dsQG.get(i).getCountryName();
+                if (currentToast != null) {
+                    currentToast.cancel(); // Tắt thông báo cũ nếu có
+                }
+
+                currentToast = Toast.makeText(MainActivity.this, mucChon, Toast.LENGTH_LONG);
+                currentToast.show();
+            }
+        });
 
 
     }

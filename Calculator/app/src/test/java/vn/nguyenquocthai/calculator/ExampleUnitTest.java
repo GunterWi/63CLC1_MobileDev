@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package vn.nguyenquocthai.calculator;
 
 import org.junit.Test;
 
