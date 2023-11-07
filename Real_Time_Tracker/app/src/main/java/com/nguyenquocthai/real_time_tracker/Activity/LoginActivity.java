@@ -29,12 +29,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(user==null){
-            setContentView(R.layout.activity_login);
-        }else{
-            startActivity(new Intent(LoginActivity.this, MyNavigation.class));
-            finish();
-        }
+        setContentView(R.layout.activity_login);
 
         Initiation();
         login.setOnClickListener(new View.OnClickListener() {
@@ -52,12 +47,17 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
             }
         });
+        /*if(auth.getCurrentUser()!=null){
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            finish();
+        }*/
     }
 
     private void loginUser(String email, String password) {
         loader.showloader();
         if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
             Toast.makeText(LoginActivity.this, "Email and password are required", Toast.LENGTH_LONG).show();
+            loader.dismissloader();
         } else {
             auth.signInWithEmailAndPassword(email, password)
                     .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
@@ -65,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
                         public void onSuccess(AuthResult authResult) {
                             loader.dismissloader();
                             Toast.makeText(LoginActivity.this, "Login successfully!", Toast.LENGTH_LONG).show();
-                            startActivity(new Intent(LoginActivity.this, MyNavigation.class));
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             finish();
                         }
 
@@ -82,7 +82,6 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     });
             loader.dismissloader();
-
         }
 
     }
@@ -95,14 +94,12 @@ public class LoginActivity extends AppCompatActivity {
         createAccount = findViewById(R.id.logtosign);
         loader = new ProgressbarLoader(LoginActivity.this);
         auth = FirebaseAuth.getInstance();
-        user=auth.getCurrentUser();
     }
 
     private EditText email;
     private EditText password;
     private Button login;
     private FirebaseAuth auth;
-    private FirebaseUser user;
     private TextView createAccount;
     private ProgressbarLoader loader;
 

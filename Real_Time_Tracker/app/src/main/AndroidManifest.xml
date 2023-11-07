@@ -17,11 +17,6 @@
         android:theme="@style/Theme.Real_Time_Tracker"
         tools:targetApi="31">
         <activity
-            android:name="com.nguyenquocthai.real_time_tracker.Activity.MyNavigation"
-            android:exported="false"
-            android:label="@string/title_activity_my_navigation"
-            android:theme="@style/Theme.Real_Time_Tracker.NoActionBar" />
-        <activity
             android:name="com.nguyenquocthai.real_time_tracker.Activity.ConfirmActivity"
             android:exported="false" />
         <activity
