@@ -2,7 +2,7 @@ package com.nguyenquocthai.real_time_tracker.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import com.example.real_time_tracker.R;
+import com.nguyenquocthai.real_time_tracker.R;
 
 public class MainActivity extends AppCompatActivity {
 

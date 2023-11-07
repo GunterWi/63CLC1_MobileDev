@@ -4,7 +4,7 @@ import android.app.Activity;
 
 import androidx.appcompat.app.AlertDialog;
 
-import com.example.real_time_tracker.R;
+import com.nguyenquocthai.real_time_tracker.R;
 
 
 public class ProgressbarLoader {

@@ -13,7 +13,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.real_time_tracker.R;
+import com.google.firebase.auth.FirebaseUser;
+import com.nguyenquocthai.real_time_tracker.ProgressbarLoader;
+import com.nguyenquocthai.real_time_tracker.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
@@ -27,7 +29,13 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        if(user==null){
+            setContentView(R.layout.activity_login);
+        }else{
+            startActivity(new Intent(LoginActivity.this, MyNavigation.class));
+            finish();
+        }
+
         Initiation();
         login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -40,12 +48,14 @@ public class LoginActivity extends AppCompatActivity {
         createAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                finish();
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
             }
         });
     }
 
     private void loginUser(String email, String password) {
+        loader.showloader();
         if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
             Toast.makeText(LoginActivity.this, "Email and password are required", Toast.LENGTH_LONG).show();
         } else {
@@ -53,8 +63,9 @@ public class LoginActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                         @Override
                         public void onSuccess(AuthResult authResult) {
+                            loader.dismissloader();
                             Toast.makeText(LoginActivity.this, "Login successfully!", Toast.LENGTH_LONG).show();
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            startActivity(new Intent(LoginActivity.this, MyNavigation.class));
                             finish();
                         }
 
@@ -62,18 +73,16 @@ public class LoginActivity extends AppCompatActivity {
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            try {
-                                throw e;
-                            } catch (FirebaseAuthInvalidUserException invalidUser) {
-                                Toast.makeText(LoginActivity.this, "User does not exist.", Toast.LENGTH_LONG).show();
-                            } catch (FirebaseAuthInvalidCredentialsException invalidCredentials) {
-                                Toast.makeText(LoginActivity.this, "Invalid password.", Toast.LENGTH_LONG).show();
-                            } catch (Exception genericException) {
-                                Toast.makeText(LoginActivity.this, "Login failed. Please try again.", Toast.LENGTH_LONG).show();
-                                Log.e("LoginActivity", "Login error: " + e.getMessage());
+                            loader.dismissloader();
+                            String errorMessage = "Login failed: Invalid password";
+                            if (e instanceof FirebaseAuthInvalidCredentialsException) {
+                                errorMessage = "Login failed: User does not exist.";
                             }
+                            Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_LONG).show();
                         }
                     });
+            loader.dismissloader();
+
         }
 
     }
@@ -84,12 +93,17 @@ public class LoginActivity extends AppCompatActivity {
         password = findViewById(R.id.edittext_password);
         login = findViewById(R.id.login_button);
         createAccount = findViewById(R.id.logtosign);
+        loader = new ProgressbarLoader(LoginActivity.this);
         auth = FirebaseAuth.getInstance();
+        user=auth.getCurrentUser();
     }
 
     private EditText email;
     private EditText password;
     private Button login;
     private FirebaseAuth auth;
+    private FirebaseUser user;
     private TextView createAccount;
+    private ProgressbarLoader loader;
+
 }
