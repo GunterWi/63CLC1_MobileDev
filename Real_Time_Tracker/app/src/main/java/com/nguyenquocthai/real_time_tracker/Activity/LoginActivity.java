@@ -47,10 +47,10 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
             }
         });
-        /*if(auth.getCurrentUser()!=null){
+        if(auth.getCurrentUser()!=null){
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
             finish();
-        }*/
+        }
     }
 
     private void loginUser(String email, String password) {
