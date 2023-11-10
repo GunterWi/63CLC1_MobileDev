@@ -25,88 +25,88 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        Initiation();
-        register.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String txt_email = email.getText().toString();
-                String txt_password = password.getText().toString();
-                String txt_firstname = firstName.getText().toString();
-                String txt_lastname = lastName.getText().toString();
-                if (TextUtils.isEmpty(txt_email) || TextUtils.isEmpty(txt_password)) {
-                    Toast.makeText(RegisterActivity.this, "Empty credentials!", Toast.LENGTH_LONG).show();
-                } else if (txt_password.length() < 6) {
-                    Toast.makeText(RegisterActivity.this, "Password too short!", Toast.LENGTH_LONG).show();
-                } else {
-                    registerUser(txt_email, txt_password,txt_firstname,txt_lastname);
-                }
-            }
-        });
-        loginAcc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+
+        initializeViews();
+        setRegisterButtonListener();
+        setLoginTextViewListener();
+    }
+
+    private void initializeViews() {
+        emailEditText = findViewById(R.id.edittext_signemail);
+        passwordEditText = findViewById(R.id.edittext_signpassword);
+        firstNameEditText = findViewById(R.id.edittext_firstname);
+        lastNameEditText = findViewById(R.id.edittext_lastname);
+        registerButton = findViewById(R.id.signup_button);
+        loginTextView = findViewById(R.id.signtolog_txt);
+        auth = FirebaseAuth.getInstance();
+    }
+
+    private void setRegisterButtonListener() {
+        registerButton.setOnClickListener(v -> {
+            String email = emailEditText.getText().toString();
+            String password = passwordEditText.getText().toString();
+            String firstName = firstNameEditText.getText().toString();
+            String lastName = lastNameEditText.getText().toString();
+            if (validateInput(email, password, firstName, lastName)) {
+                registerUser(email, password, firstName, lastName);
             }
         });
     }
 
-    private void registerUser(String email, String password, String firstname, String lastname) {
-        if (!isButtonClicked) {
-            isButtonClicked = true; // Đánh dấu rằng button đã được click
+    private boolean validateInput(String email, String password, String firstName, String lastName) {
+        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+            Toast.makeText(this, "Empty credentials!", Toast.LENGTH_LONG).show();
+            return false;
+        } else if (password.length() < 6) {
+            Toast.makeText(this, "Password too short!", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
+    }
 
-            // Thực hiện công việc cần thiết ở đây
-            auth.fetchSignInMethodsForEmail(email).addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
-                @Override
-                public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
-                    try {
-                        if (task.isSuccessful()) {
-                            SignInMethodQueryResult result = task.getResult();
-                            if (result.getSignInMethods() != null && result.getSignInMethods().size() > 0) {
-                                // Tài khoản đã tồn tại
-                                Toast.makeText(RegisterActivity.this, "Account already exists!", Toast.LENGTH_LONG).show();
-                            } else {
-                                Intent myIntent = new Intent(RegisterActivity.this, ConfirmActivity.class);
-                                myIntent.putExtra("email", email);
-                                myIntent.putExtra("password", password);
-                                myIntent.putExtra("firstname", firstname);
-                                myIntent.putExtra("lastname", lastname);
-                                startActivity(myIntent);
-                                finish();
-                            }
-                        } else {
-                            // Xử lý lỗi nếu có
-                            Toast.makeText(RegisterActivity.this,task.getException().toString(),Toast.LENGTH_LONG).show();
-                            throw task.getException();
-                        }
-                    } catch (Exception e) {
-                        // Xử lý trường hợp tắt mạng hoặc lỗi kết nối
-                        Toast.makeText(RegisterActivity.this, "Network error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    } finally {
-                        isButtonClicked = false;
+    private void setLoginTextViewListener() {
+        loginTextView.setOnClickListener(v -> startActivity(new Intent(this, LoginActivity.class)));
+    }
+
+    private void registerUser(String email, String password, String firstName, String lastName) {
+        if (!isRegisterButtonClicked) {
+            isRegisterButtonClicked = true;
+
+            auth.fetchSignInMethodsForEmail(email).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    boolean isExistingUser = task.getResult().getSignInMethods() != null &&
+                            !task.getResult().getSignInMethods().isEmpty();
+                    if (isExistingUser) {
+                        Toast.makeText(this, "Account already exists!", Toast.LENGTH_LONG).show();
+                    } else {
+                        startConfirmActivity(email, password, firstName, lastName);
                     }
+                } else {
+                    handleRegistrationError(task.getException());
                 }
+                isRegisterButtonClicked = false;
             });
         }
     }
 
-    private void Initiation() {
-        email = findViewById(R.id.edittext_signemail);
-        password = findViewById(R.id.edittext_signpassword);
-        firstName = findViewById(R.id.edittext_firstname);
-        lastName = findViewById(R.id.edittext_lastname);
-        register = findViewById(R.id.signup_button);
-        loginAcc = findViewById(R.id.signtolog_txt);
-
-        auth = FirebaseAuth.getInstance();
+    private void startConfirmActivity(String email, String password, String firstName, String lastName) {
+        Intent confirmIntent = new Intent(this, ConfirmActivity.class);
+        confirmIntent.putExtra("email", email);
+        confirmIntent.putExtra("password", password);
+        confirmIntent.putExtra("firstname", firstName);
+        confirmIntent.putExtra("lastname", lastName);
+        startActivity(confirmIntent);
+        finish();
     }
 
-    private EditText email;
-    private EditText password;
-    private EditText firstName;
-    private EditText lastName;
-    private Button register;
+    private void handleRegistrationError(Exception exception) {
+        String errorMessage = (exception != null) ? exception.getMessage() : "Unknown error occurred";
+        Toast.makeText(this, "Network error: " + errorMessage, Toast.LENGTH_LONG).show();
+    }
+    private EditText emailEditText, passwordEditText, firstNameEditText, lastNameEditText;
+    private Button registerButton;
+    private TextView loginTextView;
     private FirebaseAuth auth;
-    private TextView loginAcc;
-    private boolean isButtonClicked = false; // Biến cờ để kiểm tra đã click hay chưa
+    private boolean isRegisterButtonClicked = false;
 
 }

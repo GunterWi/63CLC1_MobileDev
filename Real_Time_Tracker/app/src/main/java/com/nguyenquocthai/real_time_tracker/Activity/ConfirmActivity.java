@@ -40,37 +40,50 @@ public class ConfirmActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirm);
-        Initiation();
+
+        initializeViews();
+        handleIncomingIntent();
+        setupImageViewListener();
+        setupConfirmButtonListener();
+    }
+    private void initializeViews() {
+        readEmail = findViewById(R.id.editText_readmail);
+        readPassword = findViewById(R.id.editText_readpassword);
+        readFirstName = findViewById(R.id.editText_firstnamechange);
+        readLastName = findViewById(R.id.editText_lastnamechange);
+        confirm = findViewById(R.id.confirm_button);
+        circleImageView = findViewById(R.id.circleImageView);
+        Code = findViewById(R.id.txtcircle_id);
+        auth = FirebaseAuth.getInstance();
+        loader = new ProgressbarLoader(ConfirmActivity.this);
+        reference = FirebaseDatabase.getInstance().getReference().child("Users");
+    }
+    private void handleIncomingIntent() {
         Intent myIntent = getIntent();
         if (myIntent != null) {
             email = myIntent.getStringExtra("email");
-            readEmail.setText(email);
             password = myIntent.getStringExtra("password");
-            readPassword.setText(password);
             firstname = myIntent.getStringExtra("firstname");
-            readFirstName.setText(firstname);
             lastname = myIntent.getStringExtra("lastname");
+            readEmail.setText(email);
+            readPassword.setText(password);
+            readFirstName.setText(firstname);
             readLastName.setText(lastname);
         }
-        circleImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent();
-                i.setAction(Intent.ACTION_GET_CONTENT);
-                i.setType("image/*");
-                startActivityForResult(i, 12);
-            }
-        });
         Code.setText(generateCode());
-        confirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signuplistner();
-            }
+    }
+    private void setupImageViewListener() {
+        circleImageView.setOnClickListener(v -> {
+            Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+            i.setType("image/*");
+            startActivityForResult(i, 12);
         });
     }
+    private void setupConfirmButtonListener() {
+        confirm.setOnClickListener(v -> signupListener());
+    }
 
-    private void signuplistner() {
+    private void signupListener() {
         loader.showloader();
         try{
             Date date = new Date();
@@ -81,7 +94,6 @@ public class ConfirmActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-
                             String userid = auth.getCurrentUser().getUid();
                             Users info = new Users(userid, readFirstName.getText().toString(), readLastName.getText().toString(), generateCode(), email, password, strdate, "null", 0, 0);
                             FirebaseDatabase.getInstance().getReference("users")
@@ -122,7 +134,6 @@ public class ConfirmActivity extends AppCompatActivity {
                     .setGuidelines(CropImageView.Guidelines.ON)
                     .setAspectRatio(1, 1)
                     .start(this);
-            Log.d("info", "đã chọn");
         }
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
