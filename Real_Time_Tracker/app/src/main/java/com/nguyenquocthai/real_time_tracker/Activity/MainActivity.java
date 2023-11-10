@@ -16,14 +16,14 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -39,6 +39,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+
+import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -54,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setupToolbarAndDrawer();
         setupMap();
         callpermissionlistener();
+        initLocationFab();
     }
     private void setupToolbarAndDrawer() {
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -86,15 +89,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     private void update_location() {
-        if (ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)== PermissionChecker.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION)==PermissionChecker.PERMISSION_GRANTED)
-        {
-            fusedLocationProviderClient = new FusedLocationProviderClient(this);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PermissionChecker.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PermissionChecker.PERMISSION_GRANTED) {
+
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
             locationRequest = new LocationRequest()
                     .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                     .setInterval(3000) //update interval
                     .setFastestInterval(5000); //fastest interval
-            fusedLocationProviderClient.requestLocationUpdates(locationRequest, new LocationCallback(){
+
+            // Request location updates with the created LocationRequest object
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, new LocationCallback() {
                 @Override
                 public void onLocationResult(LocationResult locationResult) {
                     if (locationResult != null) {
@@ -105,30 +111,44 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         final double log = locationResult.getLastLocation().getLongitude();
                         latLng = new LatLng(lat, log);
                         if (mMap != null) {
-                            mMap.addMarker(new MarkerOptions().position(latLng).title("your current location"));
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15F));
+                            mMap.addMarker(new MarkerOptions().position(latLng).title("Your current location"));
+                            if (isFirstCameraMove) {
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15F));
+                                isFirstCameraMove = false;
+                            }
                         }
-                        //update latitude and longitude
+                        // Update latitude and longitude
                         Map<String, Object> update = new HashMap<>();
                         update.put("latitude", lat);
                         update.put("longitude", log);
-                        databaseReference.child(current_uid).updateChildren(update).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                //Toast.makeText(MainActivity.this, "updated", Toast.LENGTH_SHORT).show();
-                            }
+                        databaseReference.child(current_uid).updateChildren(update).addOnCompleteListener(task -> {
+                             //Toast.makeText(MainActivity.this, "Updated", Toast.LENGTH_SHORT).show();
                         });
                     } else {
-                        Toast.makeText(MainActivity.this, "location not found", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Location not found", Toast.LENGTH_SHORT).show();
                     }
                 }
-            },getMainLooper());
-        }
-        else
-        {
+            }, getMainLooper());
+        } else {
             callpermissionlistener();
         }
     }
+
+
+    private void initLocationFab() {
+        FloatingActionButton fab = findViewById(R.id.fab_current_location);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mMap != null && latLng != null){
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15F));
+                } else {
+                    Toast.makeText(MainActivity.this, "Still waiting for current location...", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
 
 
     private void callpermissionlistener() {
@@ -214,11 +234,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FirebaseUser user;
     private DatabaseReference databaseReference;
     private GoogleMap mMap;
+    private LocationRequest locationRequest;
     private AlertDialog.Builder builder;
     private FusedLocationProviderClient fusedLocationProviderClient;
-    private LocationRequest locationRequest;
     private LatLng latLng;
     private String current_uid;
-
+    private boolean isFirstCameraMove = true;
 
 }

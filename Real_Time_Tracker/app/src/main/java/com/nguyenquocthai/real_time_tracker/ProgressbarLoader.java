@@ -25,6 +25,8 @@ public class ProgressbarLoader {
     }
 
     public void dismissloader(){
-        dialog.dismiss();
+        if(dialog != null && dialog.isShowing()){
+            dialog.dismiss();
+        }
     }
 }

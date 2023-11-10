@@ -35,10 +35,6 @@
             android:value="AIzaSyAxBZwpxnwLlQjexA8MPR-dnHC2ebHdzQo" />
 
         <activity
-            android:name=".Activity.CirclesMapActivity"
-            android:exported="false"
-            android:label="@string/title_activity_circles_map" />
-        <activity
             android:name=".Activity.ConfirmActivity"
             android:exported="false" />
         <activity
