@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nguyenquocthai.real_time_tracker.ProgressbarLoader;
 import com.nguyenquocthai.real_time_tracker.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -25,21 +26,11 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
         initializeViews();
         setRegisterButtonListener();
         setLoginTextViewListener();
     }
 
-    private void initializeViews() {
-        emailEditText = findViewById(R.id.edittext_signemail);
-        passwordEditText = findViewById(R.id.edittext_signpassword);
-        firstNameEditText = findViewById(R.id.edittext_firstname);
-        lastNameEditText = findViewById(R.id.edittext_lastname);
-        registerButton = findViewById(R.id.signup_button);
-        loginTextView = findViewById(R.id.signtolog_txt);
-        auth = FirebaseAuth.getInstance();
-    }
 
     private void setRegisterButtonListener() {
         registerButton.setOnClickListener(v -> {
@@ -103,6 +94,16 @@ public class RegisterActivity extends AppCompatActivity {
         String errorMessage = (exception != null) ? exception.getMessage() : "Unknown error occurred";
         Toast.makeText(this, "Network error: " + errorMessage, Toast.LENGTH_LONG).show();
     }
+    private void initializeViews() {
+        emailEditText = findViewById(R.id.edittext_signemail);
+        passwordEditText = findViewById(R.id.edittext_signpassword);
+        firstNameEditText = findViewById(R.id.edittext_firstname);
+        lastNameEditText = findViewById(R.id.edittext_lastname);
+        registerButton = findViewById(R.id.signup_button);
+        loginTextView = findViewById(R.id.signtolog_txt);
+        auth = FirebaseAuth.getInstance();
+    }
+
     private EditText emailEditText, passwordEditText, firstNameEditText, lastNameEditText;
     private Button registerButton;
     private TextView loginTextView;
