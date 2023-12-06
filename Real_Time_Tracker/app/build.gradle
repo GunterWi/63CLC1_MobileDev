@@ -47,6 +47,9 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
+    // input code into line up box
+    implementation 'com.github.GoodieBag:Pinview:v1.5'
     //google map
     implementation 'com.google.android.gms:play-services-location:19.0.0'
     implementation 'com.google.android.gms:play-services-maps:18.2.0'
@@ -56,10 +59,14 @@ dependencies {
     //image crop
     api 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
+    //picaso upload image from firebase to viewimage
+    implementation 'com.squareup.picasso:picasso:2.8'
+
     //firebase
     implementation 'com.google.firebase:firebase-auth-ktx:22.1.2'
     implementation 'com.google.firebase:firebase-database:20.3.0'
     implementation 'com.google.firebase:firebase-storage:20.3.0'
+    implementation 'com.google.firebase:firebase-messaging:23.3.1'
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:32.3.1')
     // TODO: Add the dependencies for Firebase products you want to use

@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/drawer_layout"
-    android:fitsSystemWindows="true"
     tools:openDrawer="start"
     tools:context="com.nguyenquocthai.real_time_tracker.Activity.MainActivity">
 
@@ -24,14 +23,24 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:background="?attr/colorPrimary"
-          app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+          app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <ImageButton
+            android:id="@+id/button_notifications"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="10dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_notifications" />
+      </androidx.appcompat.widget.Toolbar>
 
       <androidx.fragment.app.FragmentContainerView
           android:id="@+id/fragment_container"
           android:name="com.google.android.gms.maps.SupportMapFragment"
           android:layout_width="match_parent"
           android:layout_height="0dp"
-          android:layout_weight="1"/>
+          android:layout_weight="1" />
 
     </LinearLayout>
 
@@ -47,13 +56,12 @@
         app:layout_anchorGravity="bottom|end" />
 
   </androidx.coordinatorlayout.widget.CoordinatorLayout>
-  <!--lỗi bị tràn imageview padding top 51dp-->
+  <!--lỗi bị tràn imageview android:paddingTop="51dp"-->
   <com.google.android.material.navigation.NavigationView
       android:id="@+id/nav_view"
       android:layout_width="250dp"
       android:layout_height="match_parent"
       android:layout_gravity="start"
-      android:paddingTop="51dp"
       app:itemHorizontalPadding="20dp"
       app:itemIconPadding="20dp"
       app:menu="@menu/nav_menu"

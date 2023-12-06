@@ -239,7 +239,7 @@ public class ConfirmActivity extends AppCompatActivity {
         readFirstName = findViewById(R.id.editText_firstnamechange);
         readLastName = findViewById(R.id.editText_lastnamechange);
         confirm = findViewById(R.id.confirm_button);
-        circleImageView = findViewById(R.id.circleImageView);
+        circleImageView = findViewById(R.id.circleImageProfileView);
         Code = findViewById(R.id.txtcircle_id);
         auth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference("users");

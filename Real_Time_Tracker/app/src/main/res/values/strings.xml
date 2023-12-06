@@ -10,7 +10,7 @@
     <string name="dontaccount">"Don't have an account? "</string>
     <string name="sign_up">Sign Up</string>
     <string name="invitationcode">"Enter Invite code. if you want to join another circle"</string>
-    <string name="join">join</string>
+    <string name="join">Join</string>
     <string name="dialog_title">Exit</string>
     <string name="dialog_message">Do you want to close this application</string>
     <string name="splashintro">"this app will find your family, friends, and mobile phone in real-time. this app is also the perfect gps tracker for kids."</string>

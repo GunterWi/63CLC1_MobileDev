@@ -1,5 +1,6 @@
 package com.nguyenquocthai.real_time_tracker.Fragments;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -20,10 +23,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageReference;
 import com.nguyenquocthai.real_time_tracker.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileFragment extends Fragment {
 
@@ -50,11 +57,15 @@ public class ProfileFragment extends Fragment {
                     String lastname = snapshot.child("lastname").getValue(String.class);
                     String email = snapshot.child("email").getValue(String.class);
                     String password = snapshot.child("password").getValue(String.class);
+                    String image = snapshot.child("image_url").getValue(String.class);
                     firstnameEditText.setText(firstname);
                     lastnameEditText.setText(lastname);
                     emailEditText.setText(email);
                     passwordEditText.setText(password);
                     fullnameTextView.setText(lastname+" "+firstname);
+                    if(image!="null"){
+                        Picasso.get().load(image).into(imageView);
+                    }
                 }
             }
 
@@ -81,6 +92,7 @@ public class ProfileFragment extends Fragment {
         lastnameEditText = view.findViewById(R.id.edittext_lastnameProfile);
         emailEditText = view.findViewById(R.id.edittext_emailProfile);
         passwordEditText = view.findViewById(R.id.edittext_passwordProfile);
+        imageView = view.findViewById(R.id.circleImageProfileView);
         btnSave = view.findViewById(R.id.save_button);
     }
 
@@ -92,6 +104,7 @@ public class ProfileFragment extends Fragment {
     }
     private TextView fullnameTextView;
     private EditText firstnameEditText, lastnameEditText, emailEditText, passwordEditText;
+    private CircleImageView imageView;
     private Button btnSave;
     private FirebaseAuth auth;
     private FirebaseUser user;

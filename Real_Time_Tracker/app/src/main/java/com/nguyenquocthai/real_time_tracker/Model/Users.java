@@ -1,7 +1,7 @@
 package com.nguyenquocthai.real_time_tracker.Model;
 
 public class Users {
-    private String id,firstname, lastname,circle_id,email, password,  date, image_url;
+    private String id,firstname, lastname,circle_id,email, password,  date, image_url,notification;
     private double latitude, longitude;
 
     public Users(String id, String firstname, String lastname, String circle_id, String email, String password, String date, String image_url, double latitude, double longitude) {
@@ -15,8 +15,8 @@ public class Users {
         this.image_url = image_url;
         this.latitude = latitude;
         this.longitude = longitude;
+        //this.notification=notification;
     }
-
     public String getId() {
         return id;
     }
@@ -95,5 +95,13 @@ public class Users {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public String getNotification() {
+        return notification;
+    }
+
+    public void setNotification(String notification) {
+        this.notification = notification;
     }
 }

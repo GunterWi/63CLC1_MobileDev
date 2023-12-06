@@ -13,16 +13,16 @@
             android:icon="@drawable/ic_person_black"
             android:title="Profile" />
         <item
-            android:id="@+id/nev_joiningc"
+            android:id="@+id/nav_joiningc"
             android:title="Join circle"
             android:icon="@drawable/ic_join_circle"/>
         <item
-            android:id="@+id/nev_invite"
+            android:id="@+id/nav_invite"
             android:title="Invite code"
             android:icon="@drawable/ic_invitation"/>
         <item
-            android:id="@+id/nev_mycircle"
-            android:title="My circle"
+            android:id="@+id/nav_share"
+            android:title="Share Location"
             android:icon="@drawable/ic_my_circle"/>
 
     </group>

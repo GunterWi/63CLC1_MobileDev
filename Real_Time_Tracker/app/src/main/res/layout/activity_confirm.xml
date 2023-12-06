@@ -7,7 +7,7 @@
     tools:context="com.nguyenquocthai.real_time_tracker.Activity.ConfirmActivity">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/circleImageView"
+        android:id="@+id/circleImageProfileView"
         android:layout_width="130dp"
         android:layout_height="130dp"
         android:layout_alignParentTop="true"
@@ -21,7 +21,7 @@
         android:id="@+id/layout_box"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/circleImageView"
+        android:layout_below="@id/circleImageProfileView"
         android:layout_marginTop="21dp"
         android:backgroundTint="@color/PurpleLight"
         android:padding="16dp">
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/cardview"
             android:layout_marginTop="20dp"
-            android:background="@drawable/loginbtnbackground"
+            android:background="@drawable/btnbackground"
             android:backgroundTint="@color/PurpleDark"
             android:text="Confirm"
             android:textColor="#FFFFFF"

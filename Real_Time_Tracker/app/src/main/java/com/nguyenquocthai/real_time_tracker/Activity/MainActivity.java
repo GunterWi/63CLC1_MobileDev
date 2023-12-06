@@ -9,8 +9,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.ViewGroup.LayoutParams;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -31,7 +35,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.nabinbhandari.android.permissions.PermissionHandler;
 import com.nabinbhandari.android.permissions.Permissions;
+import com.nguyenquocthai.real_time_tracker.Adapter.NotificationsAdapter;
+import com.nguyenquocthai.real_time_tracker.Fragments.JoinCircleFragment;
 import com.nguyenquocthai.real_time_tracker.Fragments.ProfileFragment;
+import com.nguyenquocthai.real_time_tracker.Model.NotificationItem;
 import com.nguyenquocthai.real_time_tracker.R;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
@@ -39,12 +46,17 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
@@ -54,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         Initiation();
         setupToolbarAndDrawer();
+        setupNotificationsButton();
         setupMap();
         callpermissionlistener();
         initLocationFab();
@@ -71,21 +84,87 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
     }
+    void getFMCToken(){
 
+    }
     private void setupMap() {
         //set up google map on container
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.fragment_container);
         mapFragment.getMapAsync(this);
     }
+    private void setupNotificationsButton() {
+        notificationButton = findViewById(R.id.button_notifications);
+        notificationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleNotificationPopup();
+                NotificationItem cc = new NotificationItem("cc", "12:30", R.drawable.ic_email); // Use a proper drawable resource here
+                addNotification(cc);
+            }
+        });
+    }
+    private void toggleNotificationPopup() {
+        int xOffset = notificationButton.getWidth() - getWidthPanelNotification(); // This assumes halfScreenWidth is already calculated
+        if (notificationPopup != null) {
+            if (notificationPopup.isShowing()) {
+                notificationPopup.dismiss();
+            } else {
+                notificationPopup.showAsDropDown(notificationButton, xOffset, 0);
+            }
+        }
+
+        // Inflate the custom notification panel layout
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View customView = inflater.inflate(R.layout.notification_panel_layout, null);
+
+        // Initialize the PopupWindow if it's null
+        if (notificationPopup == null) {
+            notificationPopup = new PopupWindow(customView, getWidthPanelNotification(), LayoutParams.WRAP_CONTENT);
+            notificationPopup.setElevation(5.0f);
+            notificationPopup.setOutsideTouchable(true);
+            notificationPopup.setFocusable(true);
+            // Setup the RecyclerView inside the PopupWindow
+            if (recyclerView == null) {
+                // Find the RecyclerView and initialize it only once
+                recyclerView = customView.findViewById(R.id.notificationsRecyclerView);
+                recyclerView.setLayoutManager(new LinearLayoutManager(this));
+                if (adapter == null) {
+                    adapter = new NotificationsAdapter(getNotificationItems());
+                }
+                recyclerView.setAdapter(adapter);
+            }
+        }
+
+        // Show the popup window anchored to the notification button
+        ImageButton notificationButton = findViewById(R.id.button_notifications);
+        notificationPopup.showAsDropDown(notificationButton, 0, 0);
+    }
+    private List<NotificationItem> getNotificationItems() {
+        List<NotificationItem> items = new ArrayList<>();
+        return items;
+    }
+    public void addNotification(NotificationItem newNotification) {
+        if (adapter != null) { // Check that adapter is not null
+            adapter.getNotificationItems().add(0, newNotification); // Add the new notification
+            adapter.notifyItemInserted(0); // Notify the adapter
+            recyclerView.scrollToPosition(0); // Scroll to the top of the RecyclerView
+        } else {
+            // Adapter is not initialized yet, handle this case
+        }
+    }
+    private int getWidthPanelNotification(){
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int screenWidth = displayMetrics.widthPixels;
+
+        return screenWidth / 2-40;
+    }
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
         update_location();
-        /*LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
     }
 
 
@@ -106,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 public void onLocationResult(LocationResult locationResult) {
                     if (locationResult != null) {
                         if (mMap != null) {
-                            mMap.clear(); // Check if mMap is not null before calling clear
+                            mMap.clear(); // clear position
                         }
                         final double lat = locationResult.getLastLocation().getLatitude();
                         final double log = locationResult.getLastLocation().getLongitude();
@@ -118,6 +197,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 isFirstCameraMove = false;
                             }
                         }
+                        /*LatLng sydney = new LatLng(13.7528, 109.2084);
+                        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));*/
                         // Update latitude and longitude
                         Map<String, Object> update = new HashMap<>();
                         update.put("latitude", lat);
@@ -187,8 +268,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
     public void backpressedwarrning(){
         builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setMessage(R.string.dialog_message).setTitle(R.string.dialog_title);
-        builder.setMessage("Do you want to close this application ?")
+        builder.setMessage(R.string.dialog_message).setTitle(R.string.dialog_title)
                 .setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
@@ -214,6 +294,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             finish();
         } else if (itemId == R.id.nav_profile) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProfileFragment()).commit();
+        } else if (itemId == R.id.nav_joiningc) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new JoinCircleFragment()).commit();
+        } else if (itemId == R.id.nav_invite) {
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.setType("text/lain");
+            i.putExtra(Intent.EXTRA_TEXT,"https://www.google.com/maps/@"+latLng.latitude+","+latLng.longitude+",17z");
+            startActivity(i.createChooser(i,"Share using: "));
+        } else if(itemId==R.id.nav_share){
+
         } else if (itemId == R.id.nav_logout) {
             if (auth.getCurrentUser() != null){
                 auth.signOut();
@@ -241,5 +330,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private LatLng latLng;
     private String current_uid;
     private boolean isFirstCameraMove = true;
+    private ImageButton notificationButton;
+    private PopupWindow notificationPopup;
+    private NotificationsAdapter adapter;
+    private RecyclerView recyclerView;
 
 }
