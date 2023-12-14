@@ -33,6 +33,14 @@ public class LoginActivity extends AppCompatActivity {
         setupLoginButtonListener();
         setupCreateAccountTextViewListener();
         checkIfUserIsLoggedIn();
+
+    }
+    private void showToast(String message){
+        if (currentToast != null) {
+            currentToast.cancel(); // Tắt thông báo cũ nếu có
+        }
+        currentToast = Toast.makeText(this, message, Toast.LENGTH_LONG);
+        currentToast.show();
     }
 
     private void initializeViews() {
@@ -79,8 +87,19 @@ public class LoginActivity extends AppCompatActivity {
 
     private void proceedToMainActivity() {
         loader.dismissloader();
-        Toast.makeText(this, "Login successfully!", Toast.LENGTH_LONG).show();
-        startActivity(new Intent(this, MainActivity.class));
+        //showToast("Login successfully!");
+        if(getIntent().getExtras()!=null){
+            Intent mainActivity = new Intent(this, MainActivity.class);
+            mainActivity.putExtra("userID", getIntent().getExtras().getString("userID"));
+            mainActivity.putExtra("name", getIntent().getExtras().getString("name"));
+            startActivity(mainActivity);
+        }
+        else{
+            startActivity(new Intent(this, MainActivity.class));
+
+        }
+
+
         finish();
     }
 
@@ -97,5 +116,6 @@ public class LoginActivity extends AppCompatActivity {
     private TextView createAccountTextView;
     private FirebaseAuth auth;
     private ProgressbarLoader loader;
+    private Toast currentToast = null; // Biến để lưu trạng thái của thông báo hiện tại
 
 }

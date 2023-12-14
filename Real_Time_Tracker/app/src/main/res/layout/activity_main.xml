@@ -22,16 +22,18 @@
           android:id="@+id/toolbar"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:background="?attr/colorPrimary"
+          android:background="@color/PurpleDark"
+          app:theme="@style/ToolBarStyle"
+          android:minHeight="?attr/actionBarSize"
           app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
         <ImageButton
             android:id="@+id/button_notifications"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_gravity="end"
             android:layout_marginEnd="10dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="@drawable/progress_background"
             android:src="@drawable/ic_notifications" />
       </androidx.appcompat.widget.Toolbar>
 
@@ -48,12 +50,12 @@
         android:id="@+id/fab_current_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="10dp"
         android:clickable="true"
         android:focusable="true"
         android:src="@drawable/ic_my_location_white_24dp"
-        app:layout_anchor="@id/fragment_container"
-        app:layout_anchorGravity="bottom|end" />
+        app:backgroundTint="#FFFFFF" />
 
   </androidx.coordinatorlayout.widget.CoordinatorLayout>
   <!--lỗi bị tràn imageview android:paddingTop="51dp"-->
@@ -65,7 +67,7 @@
       app:itemHorizontalPadding="20dp"
       app:itemIconPadding="20dp"
       app:menu="@menu/nav_menu"
-      app:itemIconTint="@color/skyblue"
+      app:itemIconTint="@color/PurpleDark"
       app:headerLayout="@layout/nav_header" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

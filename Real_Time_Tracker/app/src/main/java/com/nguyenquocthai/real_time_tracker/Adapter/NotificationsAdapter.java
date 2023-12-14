@@ -31,18 +31,32 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
 
     @Override
     public void onBindViewHolder(@NonNull NotificationsAdapter.ViewHolder holder, int position) {
-        NotificationItem item = notificationItems.get(position);
+        final NotificationItem item = notificationItems.get(position);
         holder.textView.setText(item.getMessage());
         holder.timeView.setText(item.getTimestamp());
         //holder.iconView.setImageResource(item.getIconResource());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                // Sử dụng getAdapterPosition() để đảm bảo đúng vị trí item hiện tại
+                int currentPosition = holder.getAdapterPosition();
+                if (listener != null && currentPosition != RecyclerView.NO_POSITION) {
+                    listener.onNotificationItemClick(notificationItems.get(currentPosition));
+                }
             }
         });
     }
 
+    public interface OnNotificationItemClickListener {
+        void onNotificationItemClick(NotificationItem item);
+    }
+
+    private OnNotificationItemClickListener listener;
+
+    // Setter method for the listener
+    public void setOnNotificationItemClickListener(OnNotificationItemClickListener listener) {
+        this.listener = listener;
+    }
     @Override
     public int getItemCount() {
         return notificationItems.size();

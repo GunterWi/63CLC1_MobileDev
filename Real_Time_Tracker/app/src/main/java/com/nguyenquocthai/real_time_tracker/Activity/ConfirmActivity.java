@@ -141,7 +141,7 @@ public class ConfirmActivity extends AppCompatActivity {
 
     private void handleUserRegistration(String strdate) {
         String userid = auth.getCurrentUser().getUid();
-        Users info = new Users(userid, readFirstName.getText().toString(), readLastName.getText().toString(), Code.getText().toString(), email, password, strdate, "null", 0, 0);
+        Users info = new Users(userid, readFirstName.getText().toString(), readLastName.getText().toString(), Code.getText().toString(), email, password, strdate, "null", 0, 0,"null");
 
         reference.child(userid).setValue(info)
                 .addOnCompleteListener(task -> {

@@ -1,10 +1,10 @@
 package com.nguyenquocthai.real_time_tracker.Model;
 
 public class Users {
-    private String id,firstname, lastname,circle_id,email, password,  date, image_url,notification;
+    private String id,firstname, lastname,circle_id,email, password,  date, image_url,fcmToken;
     private double latitude, longitude;
 
-    public Users(String id, String firstname, String lastname, String circle_id, String email, String password, String date, String image_url, double latitude, double longitude) {
+    public Users(String id, String firstname, String lastname, String circle_id, String email, String password, String date, String image_url, double latitude, double longitude,String fcmToken) {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
@@ -15,7 +15,7 @@ public class Users {
         this.image_url = image_url;
         this.latitude = latitude;
         this.longitude = longitude;
-        //this.notification=notification;
+        this.fcmToken=fcmToken;
     }
     public String getId() {
         return id;
@@ -97,11 +97,11 @@ public class Users {
         this.longitude = longitude;
     }
 
-    public String getNotification() {
-        return notification;
+    public String getFcmToken() {
+        return fcmToken;
     }
 
-    public void setNotification(String notification) {
-        this.notification = notification;
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
     }
 }
