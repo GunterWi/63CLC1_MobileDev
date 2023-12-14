@@ -19,6 +19,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.nguyenquocthai.real_time_tracker.Adapter.MembersAdapter;
+import com.nguyenquocthai.real_time_tracker.ListFriend;
 import com.nguyenquocthai.real_time_tracker.Model.Users;
 import com.nguyenquocthai.real_time_tracker.R;
 
@@ -26,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MyCircleFragment extends Fragment {
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -38,52 +38,28 @@ public class MyCircleFragment extends Fragment {
         nameList= new ArrayList<>();
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
-        databaseReference = FirebaseDatabase.getInstance().getReference("users");
-        currentreference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("circle_members");
-        currentreference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                nameList.clear();
 
-                if (dataSnapshot.exists())
-                {
-                    for (DataSnapshot dss: dataSnapshot.getChildren())
-                    {
-                        String circleid = dss.child("circleMemberId").getValue(String.class);
-
-                        databaseReference.child(circleid).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                Users cuser = dataSnapshot.getValue(Users.class);
-                                nameList.add(cuser);
-                                adapter.notifyDataSetChanged();
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        // Initialize your adapter with the empty list
         adapter = new MembersAdapter(nameList, getActivity());
         recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+
+        // Assuming ListFriend class can update the nameList with the latest data
+        listFriend = new ListFriend(user.getUid());
+        listFriend.getListFriend(new ListFriend.DataStatus() {
+            @Override
+            public void DataIsLoaded(List<Users> users) {
+                adapter.updateMembersList(users);
+            }
+        });
         return view;
 
     }
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter adapter;
+    private MembersAdapter adapter;
     private FirebaseAuth auth;
     private FirebaseUser user;
     private List<Users> nameList;
     DatabaseReference databaseReference, currentreference;
+    private ListFriend listFriend;
 
 }

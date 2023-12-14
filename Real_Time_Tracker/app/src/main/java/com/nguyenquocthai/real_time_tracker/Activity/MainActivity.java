@@ -27,6 +27,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -49,6 +50,8 @@ import com.nguyenquocthai.real_time_tracker.Fragments.MyCircleFragment;
 import com.nguyenquocthai.real_time_tracker.Fragments.ProfileFragment;
 import com.nguyenquocthai.real_time_tracker.ListFriend;
 import com.nguyenquocthai.real_time_tracker.Model.NotificationItem;
+import com.nguyenquocthai.real_time_tracker.Model.Users;
+import com.nguyenquocthai.real_time_tracker.ProgressbarLoader;
 import com.nguyenquocthai.real_time_tracker.R;
 import com.squareup.picasso.Picasso;
 
@@ -81,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        loader = new ProgressbarLoader(this);
+        loader.showloader();
         Initiation();
         setupToolbarAndDrawer();
         getProfile();
@@ -89,13 +94,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         callpermissionlistener();
         initLocationFab();
         getFMCToken();
-        if(getIntent().getExtras()!=null){
+        handleIntentData();
+        setupBroadcastReceiver();
+        loader.dismissloader();
+
+    }
+    private void handleIntentData() {
+        if (getIntent().getExtras() != null) {
+            showAlertDialog("Hey there! " + getIntent().getExtras().getString("name") + " would like to share their location with you ", getIntent().getExtras().getString("userID"));
+        }
+    }
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
             showAlertDialog("Hey there! "+getIntent().getExtras().getString("name")+" would like to share their location with you ",getIntent().getExtras().getString("userID"));
         }
+    };
+    private void setupBroadcastReceiver() {
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("com.yourapp.FCM_MESSAGE"));
-        getNotification();
-        ListFriend listFriend = new ListFriend(current_uid);
-        listFriend.getListFriend();
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
     }
     private void showAlertDialog(String message,String userID) {
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -103,7 +124,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(DialogInterface dialog, int which) {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
-                        Log.d("cac3",userID);
                         AcceptShare acceptShare = new AcceptShare(userID,MainActivity.this);
                         acceptShare.Execute();
                         break;
@@ -121,53 +141,99 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         alertDialogBuilder.setMessage(message).show();
     }
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            showAlertDialog("Hey there! "+getIntent().getExtras().getString("name")+" would like to share their location with you ",getIntent().getExtras().getString("userID"));
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.nav_home) {
+            startActivity(new Intent(MainActivity.this, MainActivity.class));
+            fab.setVisibility(View.VISIBLE);
+            finish();
+        } else if (itemId == R.id.nav_profile) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProfileFragment()).commit();
+            fab.setVisibility(View.GONE);
+        } else if (itemId == R.id.nav_joiningc) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new JoinCircleFragment()).commit();
+            fab.setVisibility(View.GONE);
+        } else if (itemId == R.id.nav_invite) {
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.setType("text/lain");
+            i.putExtra(Intent.EXTRA_TEXT,"https://www.google.com/maps/@"+latLng.latitude+","+latLng.longitude+",17z");
+            startActivity(i.createChooser(i,"Share using: "));
+        } else if(itemId==R.id.nav_friend){
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MyCircleFragment()).commit();
+            fab.setVisibility(View.GONE);
+        } else if (itemId == R.id.nav_logout) {
+            if (auth.getCurrentUser() != null){
+                FirebaseMessaging.getInstance().deleteToken().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        auth.signOut();
+                        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                        finish();
+                    }
+                });
+
+            }
         }
-    };
-    private void setupToolbarAndDrawer() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        drawerLayout = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_nav,
-                R.string.close_nav);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-        View header = navigationView.getHeaderView(0);
-        nameView = header.findViewById(R.id.textview_name);
-        emailView = header.findViewById(R.id.textview_email);
-        avatar = header.findViewById(R.id.image_avatar);
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
     }
-    private void getProfile(){
-        databaseReference.child(current_uid).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Log.d("ProfileFragment", "Data changed");
-                if (snapshot.exists()) {
-                    String firstname = snapshot.child("firstname").getValue(String.class);
-                    String lastname = snapshot.child("lastname").getValue(String.class);
-                    String email = snapshot.child("email").getValue(String.class);
-                    String image = snapshot.child("image_url").getValue(String.class);
-                    emailView.setText(email);
-                    nameView.setText(lastname+" "+firstname);
-                    if(image!="null"){
-                        Picasso.get().load(image).into(avatar);
+    private void update_location() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PermissionChecker.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PermissionChecker.PERMISSION_GRANTED) {
+
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+            locationRequest = new LocationRequest()
+                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                    .setInterval(3000) //update interval
+                    .setFastestInterval(5000); //fastest interval
+
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult locationResult) {
+                    if (locationResult != null && mMap != null) {
+                        final double lat = locationResult.getLastLocation().getLatitude();
+                        final double lon = locationResult.getLastLocation().getLongitude();
+                        latLng = new LatLng(lat, lon);
+
+                        if (currentUserMarker == null) {
+                            currentUserMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("Your current location"));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15F));
+                        } else {
+                            currentUserMarker.setPosition(latLng);
+                        }
+
+                        listFriend.getListFriend(new ListFriend.DataStatus() {
+                            @Override
+                            public void DataIsLoaded(List<Users> users) {
+                                for (Users user : users) {
+                                    LatLng friendLatLng = new LatLng(user.getLatitude(), user.getLongitude());
+                                    if (!friendMarkers.containsKey(user.getId())) {
+                                        Marker marker = mMap.addMarker(new MarkerOptions().position(friendLatLng).title(user.getFirstname() + " " + user.getLastname()));
+                                        friendMarkers.put(user.getId(), marker);
+                                    } else {
+                                        Marker marker = friendMarkers.get(user.getId());
+                                        marker.setPosition(friendLatLng);
+                                    }
+                                }
+                            }
+                        });
+
+                        // Update Firebase with new location
+                        Map<String, Object> update = new HashMap<>();
+                        update.put("latitude", lat);
+                        update.put("longitude", lon);
+                        databaseReference.child(current_uid).updateChildren(update);
+                    } else {
+                        showToast("Location not found");
                     }
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
+            }, getMainLooper());
+        } else {
+            callpermissionlistener();
+        }
     }
     void getFMCToken(){
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
@@ -176,9 +242,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                databaseReference.child(current_uid).child("fcmToken").setValue(token);
            }
         });
-    }
-    void getNotification(){
-
     }
     private void setupMap() {
         //set up google map on container
@@ -284,54 +347,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         currentToast = Toast.makeText(this, message, Toast.LENGTH_LONG);
         currentToast.show();
     }
-    private void update_location() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PermissionChecker.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PermissionChecker.PERMISSION_GRANTED) {
 
-            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
-            locationRequest = new LocationRequest()
-                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                    .setInterval(3000) //update interval
-                    .setFastestInterval(5000); //fastest interval
-
-            // Request location updates with the created LocationRequest object
-            fusedLocationProviderClient.requestLocationUpdates(locationRequest, new LocationCallback() {
-                @Override
-                public void onLocationResult(LocationResult locationResult) {
-                    if (locationResult != null) {
-                        if (mMap != null) {
-                            mMap.clear(); // clear position
-                        }
-                        final double lat = locationResult.getLastLocation().getLatitude();
-                        final double log = locationResult.getLastLocation().getLongitude();
-                        latLng = new LatLng(lat, log);
-                        if (mMap != null) {
-                            mMap.addMarker(new MarkerOptions().position(latLng).title("Your current location"));
-                            if (isFirstCameraMove) {
-                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15F));
-                                isFirstCameraMove = false;
-                            }
-                            LatLng sydney = new LatLng(37.2765, -121.8780);
-                            mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-                        }
-
-                        // Update latitude and longitude
-                        Map<String, Object> update = new HashMap<>();
-                        update.put("latitude", lat);
-                        update.put("longitude", log);
-                        databaseReference.child(current_uid).updateChildren(update).addOnCompleteListener(task -> {
-                             //Toast.makeText(MainActivity.this, "Updated", Toast.LENGTH_SHORT).show();
-                        });
-                    } else {
-                        showToast("Location not found");
-                    }
-                }
-            }, getMainLooper());
-        } else {
-            callpermissionlistener();
-        }
-    }
 
 
     private void initLocationFab() {
@@ -380,11 +396,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         //super.onBackPressed();
     }
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
-    }
+
     public void backpressedwarrning(){
         builder = new AlertDialog.Builder(MainActivity.this);
         builder.setMessage(R.string.dialog_message).setTitle(R.string.dialog_title)
@@ -405,48 +417,56 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         alert.setTitle("Exit");
         alert.show();
     }
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int itemId = item.getItemId();
-        if (itemId == R.id.nav_home) {
-            startActivity(new Intent(MainActivity.this, MainActivity.class));
-            fab.setVisibility(View.VISIBLE);
-            finish();
-        } else if (itemId == R.id.nav_profile) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProfileFragment()).commit();
-            fab.setVisibility(View.GONE);
-        } else if (itemId == R.id.nav_joiningc) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new JoinCircleFragment()).commit();
-            fab.setVisibility(View.GONE);
-        } else if (itemId == R.id.nav_invite) {
-            Intent i = new Intent(Intent.ACTION_SEND);
-            i.setType("text/lain");
-            i.putExtra(Intent.EXTRA_TEXT,"https://www.google.com/maps/@"+latLng.latitude+","+latLng.longitude+",17z");
-            startActivity(i.createChooser(i,"Share using: "));
-        } else if(itemId==R.id.nav_friend){
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MyCircleFragment()).commit();
-            fab.setVisibility(View.GONE);
-        } else if (itemId == R.id.nav_logout) {
-            if (auth.getCurrentUser() != null){
-                FirebaseMessaging.getInstance().deleteToken().addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        auth.signOut();
-                        startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                        finish();
+
+    private void getProfile(){
+        databaseReference.child(current_uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Log.d("ProfileFragment", "Data changed");
+                if (snapshot.exists()) {
+                    String firstname = snapshot.child("firstname").getValue(String.class);
+                    String lastname = snapshot.child("lastname").getValue(String.class);
+                    String email = snapshot.child("email").getValue(String.class);
+                    String image = snapshot.child("image_url").getValue(String.class);
+                    emailView.setText(email);
+                    nameView.setText(lastname+" "+firstname);
+                    if(image!="null"){
+                        Picasso.get().load(image).into(avatar);
                     }
-                });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        }
-        drawerLayout.closeDrawer(GravityCompat.START);
-        return true;
+        });
+
+    }
+    private void setupToolbarAndDrawer() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        drawerLayout = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_nav,
+                R.string.close_nav);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+        View header = navigationView.getHeaderView(0);
+        nameView = header.findViewById(R.id.textview_name);
+        emailView = header.findViewById(R.id.textview_email);
+        avatar = header.findViewById(R.id.image_avatar);
     }
     private void Initiation() {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         current_uid = user != null ? user.getUid() : "";
         databaseReference = FirebaseDatabase.getInstance().getReference("users");
+        listFriend = new ListFriend(current_uid);
+
     }
     private DrawerLayout drawerLayout;
     private TextView nameView,emailView;
@@ -460,7 +480,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LatLng latLng;
     private String current_uid;
-    private boolean isFirstCameraMove = true;
     private FloatingActionButton fab;
     private Toast currentToast = null; // Biến để lưu trạng thái của thông báo hiện tại
     private ImageButton notificationButton;
@@ -468,5 +487,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NotificationsAdapter adapter;
     private RecyclerView recyclerView;
     private AlertDialog.Builder alertDialogBuilder;
-
+    private ListFriend listFriend;
+    private ProgressbarLoader loader;
+    private Double tempLat= (double) 0,tempLong= (double) 0;
+    private Marker currentUserMarker;
+    private Map<String, Marker> friendMarkers = new HashMap<>();
 }

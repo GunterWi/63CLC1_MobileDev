@@ -10,10 +10,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.nguyenquocthai.real_time_tracker.MembersDiffCallback;
 import com.nguyenquocthai.real_time_tracker.Model.Users;
 import com.nguyenquocthai.real_time_tracker.R;
 import com.squareup.picasso.Picasso;
@@ -65,6 +67,12 @@ public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.MemberVi
     @Override
     public int getItemCount() {
         return nameList.size();
+    }
+    public void updateMembersList(List<Users> newUsersList) {
+        DiffUtil.DiffResult result = DiffUtil.calculateDiff(new MembersDiffCallback(this.nameList, newUsersList));
+        this.nameList.clear();
+        this.nameList.addAll(newUsersList);
+        result.dispatchUpdatesTo(this);
     }
 
     public static class MemberViewHolder extends RecyclerView.ViewHolder{

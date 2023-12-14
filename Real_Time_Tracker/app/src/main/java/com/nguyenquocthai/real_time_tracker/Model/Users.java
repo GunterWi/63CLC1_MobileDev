@@ -1,5 +1,7 @@
 package com.nguyenquocthai.real_time_tracker.Model;
 
+import java.util.Objects;
+
 public class Users {
     private String id,firstname, lastname,circle_id,email, password,  date, image_url,fcmToken;
     private double latitude, longitude;
@@ -104,5 +106,27 @@ public class Users {
 
     public void setFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Users user = (Users) o;
+        return Double.compare(user.latitude, latitude) == 0 &&
+                Double.compare(user.longitude, longitude) == 0 &&
+                id.equals(user.id) &&
+                Objects.equals(firstname, user.firstname) &&
+                Objects.equals(lastname, user.lastname) &&
+                Objects.equals(circle_id, user.circle_id) &&
+                Objects.equals(email, user.email) &&
+                Objects.equals(password, user.password) &&
+                Objects.equals(date, user.date) &&
+                Objects.equals(image_url, user.image_url) &&
+                Objects.equals(fcmToken, user.fcmToken);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, firstname, lastname, circle_id, email, password, date, image_url, latitude, longitude, fcmToken);
     }
 }

@@ -20,32 +20,47 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListFriend {
-    public ListFriend(String current_uid) {
-        this.current_uid = current_uid;
+    private List<Users> nameList;
+    private String current_uid;
+    private DatabaseReference databaseReference, currentreference;
+
+    public interface DataStatus {
+        void DataIsLoaded(List<Users> users);
     }
 
-    public void getListFriend(){
-        auth= FirebaseAuth.getInstance();
-        user= auth.getCurrentUser();
-        nameList= new ArrayList<>();
-        databaseReference = FirebaseDatabase.getInstance().getReference("users");
-        currentreference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("circle_members");
-        currentreference.addValueEventListener(new ValueEventListener() {
+    public ListFriend(String current_uid) {
+        this.current_uid = current_uid;
+        this.nameList = new ArrayList<>();
+        this.databaseReference = FirebaseDatabase.getInstance().getReference("users");
+        this.currentreference = FirebaseDatabase.getInstance().getReference("users").child(current_uid).child("circle_members");
+    }
+
+    public void getListFriend(final DataStatus dataStatus) {
+        currentreference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 nameList.clear();
+                final long childrenCount = dataSnapshot.getChildrenCount();
 
-                if (dataSnapshot.exists())
-                {
-                    for (DataSnapshot dss: dataSnapshot.getChildren())
-                    {
-                        String circleid = dss.child("circleMemberId").getValue(String.class);
+                if (childrenCount == 0) {
+                    dataStatus.DataIsLoaded(nameList); // Call back immediately if there are no children
+                }
 
+                for (DataSnapshot dss : dataSnapshot.getChildren()) {
+                    String circleid = dss.child("circleMemberId").getValue(String.class);
+                    if (circleid != null) {
                         databaseReference.child(circleid).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 Users cuser = dataSnapshot.getValue(Users.class);
-                                nameList.add(cuser);
+                                if (cuser != null) {
+                                    nameList.add(cuser);
+                                }
+
+                                // Check if all children have been processed
+                                if (nameList.size() == childrenCount) {
+                                    dataStatus.DataIsLoaded(new ArrayList<>(nameList));
+                                }
                             }
 
                             @Override
@@ -63,9 +78,5 @@ public class ListFriend {
             }
         });
     }
-    private FirebaseAuth auth;
-    private FirebaseUser user;
-    private List<Users> nameList;
-    private String current_uid;
-    private DatabaseReference databaseReference, currentreference;
 }
+
