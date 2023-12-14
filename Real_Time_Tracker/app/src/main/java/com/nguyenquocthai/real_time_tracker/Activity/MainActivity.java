@@ -45,7 +45,9 @@ import com.nabinbhandari.android.permissions.Permissions;
 import com.nguyenquocthai.real_time_tracker.AcceptShare;
 import com.nguyenquocthai.real_time_tracker.Adapter.NotificationsAdapter;
 import com.nguyenquocthai.real_time_tracker.Fragments.JoinCircleFragment;
+import com.nguyenquocthai.real_time_tracker.Fragments.MyCircleFragment;
 import com.nguyenquocthai.real_time_tracker.Fragments.ProfileFragment;
+import com.nguyenquocthai.real_time_tracker.ListFriend;
 import com.nguyenquocthai.real_time_tracker.Model.NotificationItem;
 import com.nguyenquocthai.real_time_tracker.R;
 import com.squareup.picasso.Picasso;
@@ -92,6 +94,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("com.yourapp.FCM_MESSAGE"));
         getNotification();
+        ListFriend listFriend = new ListFriend(current_uid);
+        listFriend.getListFriend();
     }
     private void showAlertDialog(String message,String userID) {
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -308,9 +312,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15F));
                                 isFirstCameraMove = false;
                             }
+                            LatLng sydney = new LatLng(37.2765, -121.8780);
+                            mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
                         }
-                        /*LatLng sydney = new LatLng(13.7528, 109.2084);
-                        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));*/
+
                         // Update latitude and longitude
                         Map<String, Object> update = new HashMap<>();
                         update.put("latitude", lat);
@@ -418,8 +423,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             i.setType("text/lain");
             i.putExtra(Intent.EXTRA_TEXT,"https://www.google.com/maps/@"+latLng.latitude+","+latLng.longitude+",17z");
             startActivity(i.createChooser(i,"Share using: "));
-        } else if(itemId==R.id.nav_share){
-
+        } else if(itemId==R.id.nav_friend){
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MyCircleFragment()).commit();
+            fab.setVisibility(View.GONE);
         } else if (itemId == R.id.nav_logout) {
             if (auth.getCurrentUser() != null){
                 FirebaseMessaging.getInstance().deleteToken().addOnCompleteListener(new OnCompleteListener<Void>() {

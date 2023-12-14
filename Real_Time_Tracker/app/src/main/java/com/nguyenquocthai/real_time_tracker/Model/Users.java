@@ -3,7 +3,8 @@ package com.nguyenquocthai.real_time_tracker.Model;
 public class Users {
     private String id,firstname, lastname,circle_id,email, password,  date, image_url,fcmToken;
     private double latitude, longitude;
-
+    public Users() {
+    }
     public Users(String id, String firstname, String lastname, String circle_id, String email, String password, String date, String image_url, double latitude, double longitude,String fcmToken) {
         this.id = id;
         this.firstname = firstname;
