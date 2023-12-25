@@ -3,6 +3,7 @@ package vn.nguyenquocthai.searchlocation;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -28,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private ArrayAdapter<String> adapter;
 
+    private Handler searchHandler = new Handler(); // giữ cho 0.5s hoặc 0.2s mới thực hiện tìm kiếm
+    private Runnable searchRunnable;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,13 +52,16 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                searchHandler.removeCallbacks(searchRunnable);
                 searchLocations(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                searchLocations(newText);
+                searchHandler.removeCallbacks(searchRunnable);
+                searchRunnable = () -> searchLocations(newText);
+                searchHandler.postDelayed(searchRunnable, 200);
                 return false;
             }
         });
