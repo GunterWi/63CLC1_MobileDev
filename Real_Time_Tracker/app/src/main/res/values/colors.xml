@@ -9,12 +9,12 @@
     <color name="white">#ffffff</color>
     <color name="LowOpasityBlack">#80000000</color>
     <color name="Grey">#80707070</color>
-    <color name="LightGrey">#37485f</color>
+    <color name="LightGrey">#9C9D9F</color>
     <color name="PurpleLight">#D3C6F5</color>
     <color name="PurpleDark">#8692f7</color>
     <color name="red">#FF0000</color>
     <color name="purple">#800080</color>
-    <color name="green">#008000</color>
+    <color name="green">#00FF00</color>
     <color name="yellow">#FFFF00</color>
     <color name="startblue">#0CCBE5</color>
     <color name="orange">#FFA500</color>

@@ -67,10 +67,11 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Following"
+                            android:text="Friend"
                             android:textSize="20sp" />
 
                         <TextView
+                            android:id="@+id/textview_friend"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:paddingTop="10dp"
@@ -95,6 +96,7 @@
                             android:textSize="20sp" />
 
                         <TextView
+                            android:id="@+id/textview_code"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:paddingTop="10dp"

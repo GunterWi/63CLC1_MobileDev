@@ -14,8 +14,10 @@ android {
         targetSdk 34
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        vectorDrawables.useSupportLibrary = true
+
     }
 
     buildTypes {
@@ -75,5 +77,10 @@ dependencies {
     // When using the BoM, don't specify versions in Firebase dependencies
     //permission
     implementation 'com.nabinbhandari.android:permissions:3.8'
+
+    //view model
+    implementation "androidx.lifecycle:lifecycle-viewmodel:2.3.1"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.1"
 
 }

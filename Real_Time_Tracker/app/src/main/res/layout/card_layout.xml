@@ -37,10 +37,11 @@
                 android:textStyle="bold" />
 
             <ImageView
+                android:id="@+id/statusImageView"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                android:src="@drawable/ic_red_offline" />
+                android:src="@drawable/ic_email" />
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>

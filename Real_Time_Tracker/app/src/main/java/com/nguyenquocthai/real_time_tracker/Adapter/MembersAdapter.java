@@ -2,6 +2,7 @@ package com.nguyenquocthai.real_time_tracker.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,11 +11,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.nguyenquocthai.real_time_tracker.Fragments.JoinCircleFragment;
+import com.nguyenquocthai.real_time_tracker.Fragments.MyCircleFragment;
+import com.nguyenquocthai.real_time_tracker.Fragments.ProfileFragment;
 import com.nguyenquocthai.real_time_tracker.MembersDiffCallback;
 import com.nguyenquocthai.real_time_tracker.Model.Users;
 import com.nguyenquocthai.real_time_tracker.R;
@@ -49,17 +55,18 @@ public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.MemberVi
         holder.nametxt.setText(userobj.getFirstname());
         /*String strobj = namelist.get(position);
         holder.nametxt.setText(strobj);*/
-
+        if(userobj.getIsOnline()==1){
+            holder.status.setImageResource(R.drawable.ic_green_online);
+        }
+        else {
+            holder.status.setImageResource(R.drawable.ic_red_offline);
+        }
         //final String strobj1 = idlist.get(position);
         Picasso.get().load(userobj.getImage_url()).placeholder(R.drawable.ic_user).into(holder.circleImageView);
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-               /* Intent intent = new Intent(context, circle_members_map.class);
-                intent.putExtra("joined_uid",strobj1);
-                context.startActivity(intent);*/
-                Toast.makeText(context,"response",Toast.LENGTH_LONG).show();
+        holder.itemView.setOnClickListener(v -> {
+            int currentPosition = holder.getAdapterPosition();
+            if (listener != null && currentPosition != RecyclerView.NO_POSITION) {
+                listener.onMemberClick(nameList.get(currentPosition));
             }
         });
     }
@@ -74,10 +81,19 @@ public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.MemberVi
         this.nameList.addAll(newUsersList);
         result.dispatchUpdatesTo(this);
     }
+    public interface OnMemberClickListener {
+        void onMemberClick(Users user);
+    }
+    private OnMemberClickListener listener;
+
+    public void setOnMemberClickListener(OnMemberClickListener onMemberClickListener) {
+        this.listener = onMemberClickListener;
+    }
 
     public static class MemberViewHolder extends RecyclerView.ViewHolder{
         TextView nametxt;
         CircleImageView circleImageView;
+        ImageView status;
         Context c;
         List<Users> namearraylist;
         FirebaseAuth auth;
@@ -93,6 +109,7 @@ public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.MemberVi
 
             nametxt = itemView.findViewById(R.id.textview_name);
             circleImageView=itemView.findViewById(R.id.lazyAvatar);
+            status=itemView.findViewById(R.id.statusImageView);
         }
 
     }

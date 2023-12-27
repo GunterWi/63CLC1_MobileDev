@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.auth.FirebaseUser;
 import com.nguyenquocthai.real_time_tracker.ProgressbarLoader;
 import com.nguyenquocthai.real_time_tracker.R;
@@ -32,12 +34,13 @@ public class LoginActivity extends AppCompatActivity {
         initializeViews();
         setupLoginButtonListener();
         setupCreateAccountTextViewListener();
-        checkIfUserIsLoggedIn();
-
+        SharedPreferences preferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+        loginAttempts = preferences.getInt("loginAttempts", 0);
+        lastLoginAttemptTime = preferences.getLong("lastLoginAttemptTime", 0);
     }
     private void showToast(String message){
         if (currentToast != null) {
-            currentToast.cancel(); // Tắt thông báo cũ nếu có
+            currentToast.cancel();
         }
         currentToast = Toast.makeText(this, message, Toast.LENGTH_LONG);
         currentToast.show();
@@ -67,21 +70,31 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void checkIfUserIsLoggedIn() {
-        if (auth.getCurrentUser() != null) {
-            proceedToMainActivity();
-        }
-    }
 
     private void loginUser(String email, String password) {
-        loader.showloader();
-        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
-            Toast.makeText(this, "Email and password are required", Toast.LENGTH_LONG).show();
-        } else {
-            auth.signInWithEmailAndPassword(email, password)
-                    .addOnSuccessListener(authResult -> proceedToMainActivity())
-                    .addOnFailureListener(e -> handleLoginFailure(e));
+        long currentTime = System.currentTimeMillis();
+        if (loginAttempts >= 3 && (currentTime - lastLoginAttemptTime) < 60000) {
+            showToast("Please wait for a minute before trying again.");
+            return;
         }
+        /*if((currentTime - lastLoginAttemptTime) >= 60000){
+            loginAttempts=0;
+        }*/
+        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+            showToast("Email and password are required");
+            return;
+        }
+
+        loader.showloader();
+        auth.signInWithEmailAndPassword(email, password)
+                .addOnSuccessListener(authResult -> {
+                    proceedToMainActivity();
+                    resetLoginAttempts();
+                })
+                .addOnFailureListener(e -> {
+                    handleLoginFailure(e);
+                    updateLoginAttempts();
+                });
         loader.dismissloader();
     }
 
@@ -96,26 +109,50 @@ public class LoginActivity extends AppCompatActivity {
         }
         else{
             startActivity(new Intent(this, MainActivity.class));
-
         }
-
-
         finish();
     }
-
     private void handleLoginFailure(Exception e) {
         loader.dismissloader();
-        String errorMessage = "Login failed: Invalid password";
+        String errorMessage = "";
+
         if (e instanceof FirebaseAuthInvalidCredentialsException) {
-            errorMessage = "Login failed: User does not exist.";
+            errorMessage = "Authentication failed: Invalid email or password.";
+        } else if (e instanceof FirebaseNetworkException) {
+            errorMessage = "Login failed: No internet connection.";
+        } else {
+            errorMessage = "Login failed: " + e.getLocalizedMessage();
         }
         Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+    }
+    private void updateLoginAttempts() {
+        loginAttempts++;
+        lastLoginAttemptTime = System.currentTimeMillis();
+
+        SharedPreferences preferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("loginAttempts", loginAttempts);
+        editor.putLong("lastLoginAttemptTime", lastLoginAttemptTime);
+        editor.apply();
+    }
+
+    private void resetLoginAttempts() {
+        loginAttempts = 0;
+        lastLoginAttemptTime = 0;
+
+        SharedPreferences preferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("loginAttempts", 0);
+        editor.putLong("lastLoginAttemptTime", 0);
+        editor.apply();
     }
     private EditText emailEditText, passwordEditText;
     private Button loginButton;
     private TextView createAccountTextView;
     private FirebaseAuth auth;
     private ProgressbarLoader loader;
-    private Toast currentToast = null; // Biến để lưu trạng thái của thông báo hiện tại
+    private Toast currentToast = null;
+    private int loginAttempts = 0;
+    private long lastLoginAttemptTime = 0;
 
 }

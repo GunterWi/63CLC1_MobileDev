@@ -44,13 +44,10 @@ public class AcceptShare {
         currentReference.child(userID).setValue(join);
         //set friend id my code
         friendReference.child(currentID).setValue(join1)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(myactivity, "joined success", Toast.LENGTH_SHORT).show();
-                            loader.dismissloader();
-                        }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(myactivity, "joined success", Toast.LENGTH_SHORT).show();
+                        loader.dismissloader();
                     }
                 });
     }

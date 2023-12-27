@@ -95,6 +95,7 @@
                 android:layout_marginTop="35dp"
                 android:background="@drawable/btnbackground"
                 android:backgroundTint="@color/PurpleDark"
+                android:cursorVisible="true"
                 android:text="@string/login"
                 android:textColor="@color/white"
                 android:textSize="20sp"

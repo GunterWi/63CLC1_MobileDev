@@ -12,7 +12,7 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <item name="toolbarStyle">@style/ToolBarStyle</item>
-
+        <item name="android:windowIsTranslucent">true</item>
         <!-- Customize your theme here. -->
     </style>
     <style name="ToolBarStyle" parent="Theme.AppCompat">

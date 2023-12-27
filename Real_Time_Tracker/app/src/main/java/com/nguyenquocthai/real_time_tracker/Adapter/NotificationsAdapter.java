@@ -35,14 +35,11 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         holder.textView.setText(item.getMessage());
         holder.timeView.setText(item.getTimestamp());
         //holder.iconView.setImageResource(item.getIconResource());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Sử dụng getAdapterPosition() để đảm bảo đúng vị trí item hiện tại
-                int currentPosition = holder.getAdapterPosition();
-                if (listener != null && currentPosition != RecyclerView.NO_POSITION) {
-                    listener.onNotificationItemClick(notificationItems.get(currentPosition));
-                }
+        holder.itemView.setOnClickListener(v -> {
+            // Sử dụng getAdapterPosition() để đảm bảo đúng vị trí item hiện tại
+            int currentPosition = holder.getAdapterPosition();
+            if (listener != null && currentPosition != RecyclerView.NO_POSITION) {
+                listener.onNotificationItemClick(notificationItems.get(currentPosition));
             }
         });
     }

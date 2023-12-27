@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,12 +49,8 @@ public class JoinCircleFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_join_circle, container, false);
         initializeViews(view);
         databaseReference= FirebaseDatabase.getInstance().getReference().child("users");
-        joinbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                joinbtnlistener();
-            }
-        });
+        checkReference= FirebaseDatabase.getInstance().getReference("users").child(currentID).child("circle_members");
+        joinbtn.setOnClickListener(v -> joinbtnlistener());
         return view;
     }
     private void joinbtnlistener() {
@@ -63,28 +60,54 @@ public class JoinCircleFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    //users userc;
+                    final boolean[] alreadyFriend = {false}; // Flag to indicate if already friends
                     for (DataSnapshot dss : snapshot.getChildren()) {
-                            /*userc = dss.getValue(users.class);
-                            joinuid = userc.getid();*/
-
                         String firstname = dss.child("firstname").getValue(String.class);
                         String lastname = dss.child("lastname").getValue(String.class);
                         String fcmToken = dss.child("fcmToken").getValue(String.class);
+                        String broId = dss.child("id").getValue(String.class);
+                        Log.d("Test",broId);
 
-                        sendNotification(currentID,lastname+" "+firstname,fcmToken);
-                        Toast.makeText(getActivity(), "joined success", Toast.LENGTH_SHORT).show();
-                        loader.dismissloader();
+                        checkReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                for (DataSnapshot dss : snapshot.getChildren()) {
+                                    String id = dss.child("circleMemberId").getValue(String.class);
+                                    Log.d("Test",id);
+                                    if (id != null && id.equals(broId)) {
+                                        Toast.makeText(getActivity(), "You are already friend with", Toast.LENGTH_SHORT).show();
+                                        alreadyFriend[0] = true;
+                                        loader.dismissloader();
+                                        return;
+                                    }
+                                }
+
+                                if (!alreadyFriend[0]) {
+                                    sendNotification(currentID, lastname + " " + firstname, fcmToken);
+                                    Toast.makeText(getActivity(), "Invited", Toast.LENGTH_SHORT).show();
+                                }
+                                loader.dismissloader();
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                loader.dismissloader();
+                            }
+                        });
+
+                        if (alreadyFriend[0]) {
+                            break; // Break the loop if already friends
+                        }
                     }
                 } else {
-                    Toast.makeText(getActivity(), "this code is not available", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "This code is not available", Toast.LENGTH_SHORT).show();
                     loader.dismissloader();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                loader.dismissloader();
             }
         });
     }
@@ -145,7 +168,7 @@ public class JoinCircleFragment extends Fragment {
     private String currentID;
     private Pinview pinview;
     private Button joinbtn;
-    private DatabaseReference databaseReference;
+    private DatabaseReference databaseReference,checkReference;
     private FirebaseAuth auth;
     private FirebaseUser user;
     private ProgressbarLoader loader;

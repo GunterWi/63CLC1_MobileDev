@@ -1,4 +1,4 @@
-package com.nguyenquocthai.real_time_tracker.Model;
+package com.nguyenquocthai.real_time_tracker;
 
 import android.content.Intent;
 
