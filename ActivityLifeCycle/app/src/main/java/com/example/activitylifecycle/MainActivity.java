@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,6 +44,11 @@ public class MainActivity extends AppCompatActivity {
     {
         super.onDestroy();
         Log.d(tag, "In the onDestroy() event");
+    }
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if(hasFocus)
+            Toast.makeText(this, "cc", Toast.LENGTH_LONG).show();
     }
 
 }
