@@ -3,8 +3,8 @@ package com.nguyenquocthai.real_time_tracker.Fragments;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,17 +16,13 @@ import android.view.ViewGroup;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.nguyenquocthai.real_time_tracker.Activity.MainActivity;
 import com.nguyenquocthai.real_time_tracker.Adapter.MembersAdapter;
 import com.nguyenquocthai.real_time_tracker.ListFriend;
 import com.nguyenquocthai.real_time_tracker.Model.Users;
 import com.nguyenquocthai.real_time_tracker.R;
-import com.nguyenquocthai.real_time_tracker.SharedViewModel;
+import com.nguyenquocthai.real_time_tracker.Model.SharedViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +58,10 @@ public class MyCircleFragment extends Fragment {
             public void onMemberClick(Users user) {
                 SharedViewModel viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
                 viewModel.setLocationData(new LatLng(user.getLatitude(), user.getLongitude()));
-                getActivity().getSupportFragmentManager().popBackStack();
+                getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                /*Intent intent = new Intent(getActivity(), MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);*/
                 //SharedViewModel viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
                 //viewModel.setOtherData(yourOtherData);
             }

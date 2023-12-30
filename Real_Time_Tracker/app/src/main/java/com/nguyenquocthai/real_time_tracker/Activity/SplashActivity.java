@@ -25,7 +25,7 @@ public class SplashActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_splash);
         initializeViews();
-        loadUserProfileData();
+        goToActivity();
     }
 
     private void loadUserProfileData() {
@@ -42,14 +42,31 @@ public class SplashActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-
     private void goToMainActivity() {
+        if (getIntent().getExtras() != null && getIntent().hasExtra("userID")) {
+            // When your friend send data
+            Intent mainIntent = new Intent(this, MainActivity.class);
+            mainIntent.putExtras(getIntent().getExtras());
+            startActivity(mainIntent);
+            finish();
+        }else{
+            Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
+    }
+
+    private void goToActivity() {
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
+                if (auth.getCurrentUser() != null) {
+                    goToMainActivity();
+                }
+                else{
+                    goToLoginActivity();
+                }
             }
         },  3000);
     }

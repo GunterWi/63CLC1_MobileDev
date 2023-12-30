@@ -87,7 +87,6 @@ public class RegisterActivity extends AppCompatActivity {
         confirmIntent.putExtra("firstname", firstName);
         confirmIntent.putExtra("lastname", lastName);
         startActivity(confirmIntent);
-        finish();
     }
 
     private void handleRegistrationError(Exception exception) {

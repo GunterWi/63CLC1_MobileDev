@@ -43,12 +43,31 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileFragment extends Fragment {
 
+    // Lưu trạng thái
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (imageUri != null) {
+            outState.putString("savedImageUri", imageUri.toString());
+        }
+        outState.putBoolean("isImageBeingUpdated", isImageBeingUpdated);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         initializeFirebase();
         initializeViews(view);
+
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey("savedImageUri")) {
+                String savedImageUriString = savedInstanceState.getString("savedImageUri");
+                imageUri = Uri.parse(savedImageUriString);
+                Picasso.get().load(imageUri).into(imageView);
+            }
+            isImageBeingUpdated = savedInstanceState.getBoolean("isImageBeingUpdated", false);
+        }
+
         setProfileDataListener();
         activityResultNew();
         setupImageViewListener();
@@ -58,14 +77,15 @@ public class ProfileFragment extends Fragment {
 
 
 
+
     private void setProfileDataListener() {
         loader.showloader();
-        countFriend=0;
         //addValueEventListener() keep listening to query or database reference it is attached to.
         reference.child(current_uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Log.d("ProfileFragment", "Data changed");
+                countFriend=0;
                 if (snapshot.exists()) {
                     String firstname = snapshot.child("firstname").getValue(String.class);
                     String lastname = snapshot.child("lastname").getValue(String.class);
@@ -162,15 +182,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void updateUserImage(String userid, String downloadUrl) {
-        reference.child(userid).child("image_url").setValue(downloadUrl)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        showToast("Submitted..");
-                    } else {
-                        showToast("Error updating image");
-                    }
-                    loader.dismissloader();
-                });
+        reference.child(userid).child("image_url").setValue(downloadUrl);
     }
 
     private void saveProfile() {

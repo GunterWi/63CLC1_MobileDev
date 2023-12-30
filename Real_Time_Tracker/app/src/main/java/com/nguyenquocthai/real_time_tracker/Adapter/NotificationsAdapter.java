@@ -10,9 +10,15 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.nguyenquocthai.real_time_tracker.Model.NotificationItem;
 import com.nguyenquocthai.real_time_tracker.R;
+import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdapter.ViewHolder> {
 
@@ -28,13 +34,18 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.notification_item_layout, parent, false);
         return new ViewHolder(view);
     }
-
+    private String convertTimestampToTimeString(long timestamp) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timestamp);
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        return sdf.format(calendar.getTime());
+    }
     @Override
     public void onBindViewHolder(@NonNull NotificationsAdapter.ViewHolder holder, int position) {
         final NotificationItem item = notificationItems.get(position);
         holder.textView.setText(item.getMessage());
-        holder.timeView.setText(item.getTimestamp());
-        //holder.iconView.setImageResource(item.getIconResource());
+        holder.timeView.setText(convertTimestampToTimeString(item.getTimestamp()));
+        Picasso.get().load(item.getAvatar()).into(holder.iconView);
         holder.itemView.setOnClickListener(v -> {
             // Sử dụng getAdapterPosition() để đảm bảo đúng vị trí item hiện tại
             int currentPosition = holder.getAdapterPosition();
@@ -42,6 +53,10 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                 listener.onNotificationItemClick(notificationItems.get(currentPosition));
             }
         });
+    }
+    public void clearNotifications() {
+        notificationItems.clear();
+        notifyDataSetChanged();
     }
 
     public interface OnNotificationItemClickListener {
@@ -62,7 +77,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         return notificationItems;
     }
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public ImageView iconView;
+        public CircleImageView iconView;
         public TextView textView;
         public TextView timeView;
 
@@ -70,6 +85,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
             super(itemView);
             iconView = itemView.findViewById(R.id.icon);
             textView = itemView.findViewById(R.id.notification_text);
+            textView.setSelected(true);
             timeView = itemView.findViewById(R.id.notification_time);
         }
     }

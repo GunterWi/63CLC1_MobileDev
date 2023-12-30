@@ -23,7 +23,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.nguyenquocthai.real_time_tracker.CircleMemberChecker;
 import com.nguyenquocthai.real_time_tracker.Model.CircleJoin;
+import com.nguyenquocthai.real_time_tracker.Model.NotificationItem;
 import com.nguyenquocthai.real_time_tracker.Model.Users;
 import com.nguyenquocthai.real_time_tracker.ProgressbarLoader;
 import com.nguyenquocthai.real_time_tracker.R;
@@ -31,6 +33,9 @@ import com.nguyenquocthai.real_time_tracker.R;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -48,10 +53,22 @@ public class JoinCircleFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_join_circle, container, false);
         initializeViews(view);
-        databaseReference= FirebaseDatabase.getInstance().getReference().child("users");
-        checkReference= FirebaseDatabase.getInstance().getReference("users").child(currentID).child("circle_members");
+        getMyProfile();
         joinbtn.setOnClickListener(v -> joinbtnlistener());
         return view;
+    }
+    private void getMyProfile(){
+        databaseReference.child(currentID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                users = snapshot.getValue(Users.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
     private void joinbtnlistener() {
         loader.showloader();
@@ -60,56 +77,52 @@ public class JoinCircleFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    final boolean[] alreadyFriend = {false}; // Flag to indicate if already friends
                     for (DataSnapshot dss : snapshot.getChildren()) {
                         String firstname = dss.child("firstname").getValue(String.class);
                         String lastname = dss.child("lastname").getValue(String.class);
                         String fcmToken = dss.child("fcmToken").getValue(String.class);
                         String broId = dss.child("id").getValue(String.class);
-                        Log.d("Test",broId);
 
-                        checkReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                for (DataSnapshot dss : snapshot.getChildren()) {
-                                    String id = dss.child("circleMemberId").getValue(String.class);
-                                    Log.d("Test",id);
-                                    if (id != null && id.equals(broId)) {
-                                        Toast.makeText(getActivity(), "You are already friend with", Toast.LENGTH_SHORT).show();
-                                        alreadyFriend[0] = true;
+                        CircleMemberChecker checker = new CircleMemberChecker(currentID);
+                        checker.checkIfMember(broId, new CircleMemberChecker.CircleMemberCheckListener() {
+                                    @Override
+                                    public void onCheckComplete(boolean isMember) {
+                                        if (isMember) {
+                                            Toast.makeText(getActivity(), "You are already friends with " + lastname + " " + firstname, Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            sendNotification(currentID, users.getLastname() + " " + users.getFirstname(), fcmToken);
+                                            addNotification(broId,users.getLastname() + " " + users.getFirstname()+" wanna make friend with you :D",users.getImage_url());
+                                            Toast.makeText(getActivity(), "Invited", Toast.LENGTH_SHORT).show();
+                                        }
                                         loader.dismissloader();
-                                        return;
                                     }
-                                }
-
-                                if (!alreadyFriend[0]) {
-                                    sendNotification(currentID, lastname + " " + firstname, fcmToken);
-                                    Toast.makeText(getActivity(), "Invited", Toast.LENGTH_SHORT).show();
-                                }
-                                loader.dismissloader();
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                loader.dismissloader();
-                            }
-                        });
-
-                        if (alreadyFriend[0]) {
-                            break; // Break the loop if already friends
-                        }
+                                });
                     }
                 } else {
                     Toast.makeText(getActivity(), "This code is not available", Toast.LENGTH_SHORT).show();
                     loader.dismissloader();
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 loader.dismissloader();
             }
         });
+    }
+
+    private void addNotification(String broId,String message,String avatar) {
+
+        countReference.child(broId).child("notification").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                id=(int) snapshot.getChildrenCount();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+        NotificationItem ob = new NotificationItem(currentID,message,System.currentTimeMillis(),avatar); // thông báo của mình
+        databaseReference.child(broId).child("notification").child(String.valueOf(id)).setValue(ob); // set lên thông báo của bạn
     }
     private void sendNotification(String userID,String name,String fcmToken){
         try {
@@ -158,18 +171,20 @@ public class JoinCircleFragment extends Fragment {
     private void initializeViews(View view) {
         pinview= view.findViewById(R.id.pinview);
         joinbtn = view.findViewById(R.id.join_button);
-
         loader = new ProgressbarLoader(getActivity());
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         currentID = user != null ? user.getUid() : "";
-
+        countReference= FirebaseDatabase.getInstance().getReference().child("users");
+        databaseReference= FirebaseDatabase.getInstance().getReference().child("users");
     }
     private String currentID;
     private Pinview pinview;
     private Button joinbtn;
-    private DatabaseReference databaseReference,checkReference;
+    private DatabaseReference databaseReference,countReference;
     private FirebaseAuth auth;
     private FirebaseUser user;
     private ProgressbarLoader loader;
+    private int id;
+    private Users users;
 }

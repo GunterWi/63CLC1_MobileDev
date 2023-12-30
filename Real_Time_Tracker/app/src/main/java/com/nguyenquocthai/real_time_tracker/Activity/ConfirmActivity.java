@@ -166,7 +166,7 @@ public class ConfirmActivity extends AppCompatActivity {
         reference.child(userid).child("image_url").setValue(downloadUrl)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        showToast("Submitted..");
+                        showToast("Create account succesfully");
                         navigateToLogin();
                     } else {
                         showToast("Error updating image");

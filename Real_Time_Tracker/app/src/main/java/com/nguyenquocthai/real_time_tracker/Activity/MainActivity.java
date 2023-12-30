@@ -1,11 +1,13 @@
 package com.nguyenquocthai.real_time_tracker.Activity;
 
-import androidx.annotation.DrawableRes;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,11 +15,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,13 +35,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -62,7 +61,7 @@ import com.nguyenquocthai.real_time_tracker.Model.NotificationItem;
 import com.nguyenquocthai.real_time_tracker.Model.Users;
 import com.nguyenquocthai.real_time_tracker.ProgressbarLoader;
 import com.nguyenquocthai.real_time_tracker.R;
-import com.nguyenquocthai.real_time_tracker.SharedViewModel;
+import com.nguyenquocthai.real_time_tracker.Model.SharedViewModel;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -81,14 +80,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
@@ -102,30 +104,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Initiation();
         setupToolbarAndDrawer();
         getProfile();
-        setupNotificationsButton();
         setupMap();
         callpermissionlistener();
+        checkNotificationEnabled();
         initLocationFab();
         getFMCToken();
         handleIntentData();
-        setupBroadcastReceiver();
+        setupNotificationsButton();
     }
-
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent); // Cập nhật Intent hiện tại của Activity
     }
 
-    private void handleIntentData() {
-        if (getIntent().getExtras() != null) {
-            String name = getIntent().getExtras().getString("name");
-            String userID = getIntent().getExtras().getString("userID");
-            if (name != null && !name.isEmpty() && userID != null && !userID.isEmpty()) {
-                showAlertDialog("Hey there! " + name + " would like to share their location with you ", userID);
-            }
-        }
-    }
     private void handleIntentDataForMap() {
         SharedViewModel viewModel = new ViewModelProvider(this).get(SharedViewModel.class);
         viewModel.getLocationData().observe(this, latLng -> {
@@ -146,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, Intent intent) { // Get data when u using app
             showAlertDialog("Hey there! "+intent.getExtras().getString("name")+" would like to share their location with you ",intent.getExtras().getString("userID"));
         }
     };
@@ -158,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onStart();
         setOnline();
         update_location();
+        setupBroadcastReceiver();
     }
     @Override
     protected void onStop() {
@@ -199,9 +192,108 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         alertDialogBuilder.setMessage(message).show();
     }
+    private void handleIntentData() {
+        if (getIntent().getExtras() != null) { // Get data when u not using app
+            String name = getIntent().getExtras().getString("name");
+            String userID = getIntent().getExtras().getString("userID");
+            if (name != null && !name.isEmpty() && userID != null && !userID.isEmpty()) {
+                showAlertDialog("Hey there! " + name + " would like to share their location with you ", userID);
+            }
+        }
+    }
+    private boolean isNewNotification(NotificationItem notification) {
+        // Kiểm tra xem timestamp của thông báo có mới hơn timestamp cuối cùng đã biết không
+        return lastNotificationTimestamp == null || notification.getTimestamp() > lastNotificationTimestamp;
+    }
+    private void setupNotificationsButton() {
+        notificationButton = findViewById(R.id.button_notifications);
+        notificationButton.setOnClickListener(v -> {
+            if (notificationPopup == null) {
+                initNotificationPopup();
+            }
+            toggleNotificationPopup();
+        });
+    }
+    private void initNotificationPopup() {
+        // Inflate the custom notification panel layout
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View customView = inflater.inflate(R.layout.notification_panel_layout, null);
 
+        // Initialize the PopupWindow
+        notificationPopup = new PopupWindow(customView, getWidthPanelNotification(), LayoutParams.WRAP_CONTENT);
+        notificationPopup.setElevation(5.0f);
+        notificationPopup.setOutsideTouchable(true);
+        notificationPopup.setFocusable(true);
 
+        // Initialize the RecyclerView
+        recyclerView = customView.findViewById(R.id.notificationsRecyclerView); // id panel
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new NotificationsAdapter(getNotificationItems());
+        adapter.setOnNotificationItemClickListener(new NotificationsAdapter.OnNotificationItemClickListener() {
+            @Override
+            public void onNotificationItemClick(NotificationItem item) {
+                showAlertDialog(item.getMessage(), item.getUserID());
+            }
+        });
 
+        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(adapter);
+
+        // Now that the PopupWindow and RecyclerView are initialized, start listening for notifications
+        getNotification();
+    }
+    private void toggleNotificationPopup() {
+        int xOffset = notificationButton.getWidth() - getWidthPanelNotification(); // Calculate the offset
+        if (notificationPopup.isShowing()) {
+            notificationPopup.dismiss();
+        } else {
+            notificationPopup.showAsDropDown(notificationButton, xOffset, 0);
+        }
+    }
+    private List<NotificationItem> getNotificationItems() {
+        List<NotificationItem> items = new ArrayList<>();
+        return items;
+    }
+    public void addNotification(NotificationItem newNotification) {
+        if (adapter != null) {
+            Log.d("notificationadd",newNotification.getUserID());
+            adapter.getNotificationItems().add(0, newNotification); // Add the new notification
+            adapter.notifyItemInserted(0); // Notify the adapter
+            recyclerView.scrollToPosition(0); // Scroll to the top of the RecyclerView
+        } else {
+        }
+    }
+    private void getNotification(){
+        // Giả sử bạn muốn lấy 10 thông báo mới nhất
+        notifiReference.orderByChild("timestamp").limitToLast(10).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Xóa các thông báo cũ trước khi thêm mới
+                adapter.clearNotifications();
+
+                // Duyệt qua các mục trong snapshot
+                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                    NotificationItem notification = childSnapshot.getValue(NotificationItem.class);
+                    if (notification != null) {
+                        Log.d("notificationID", notification.getUserID());
+                        addNotification(notification);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Xử lý lỗi
+            }
+        });
+    }
+    private int getWidthPanelNotification(){
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int screenWidth = displayMetrics.widthPixels;
+
+        return screenWidth / 2-40;
+    }
     private void setupMap() {
         //set up google map on container
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -337,100 +429,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
     }
-
-
-    private void setupNotificationsButton() {
-        notificationButton = findViewById(R.id.button_notifications);
-        notificationButton.setOnClickListener(v -> {
-            toggleNotificationPopup();
-            Random r = new Random();
-            int intcode = 1 + r.nextInt(3);
-            NotificationItem cc = new NotificationItem(""+intcode, "12:30", R.drawable.ic_email); // Use a proper drawable resource here
-            addNotification(cc);
-            adapter.setOnNotificationItemClickListener(new NotificationsAdapter.OnNotificationItemClickListener() {
-                @Override
-                public void onNotificationItemClick(NotificationItem item) {
-                    if (item.getMessage().equals("1") ) {
-                        // Thực hiện hành động cho item cụ thể này
-                        showToast("Item đặc biệt được chọn");
-                    } else {
-                        // Hành động cho các item khác
-                        showToast("Item thông thường: "+item.getMessage());
-
-                    }
-                }
-            });
-        });
-
-    }
-    private void toggleNotificationPopup() {
-        int xOffset = notificationButton.getWidth() - getWidthPanelNotification(); // This assumes halfScreenWidth is already calculated
-        if (notificationPopup != null) {
-            if (notificationPopup.isShowing()) {
-                notificationPopup.dismiss();
-            } else {
-                notificationPopup.showAsDropDown(notificationButton, xOffset, 0);
-            }
-        }
-
-        // Inflate the custom notification panel layout
-        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        View customView = inflater.inflate(R.layout.notification_panel_layout, null);
-
-        // Initialize the PopupWindow if it's null
-        if (notificationPopup == null) {
-            notificationPopup = new PopupWindow(customView, getWidthPanelNotification(), LayoutParams.WRAP_CONTENT);
-            notificationPopup.setElevation(5.0f);
-            notificationPopup.setOutsideTouchable(true);
-            notificationPopup.setFocusable(true);
-            // Setup the RecyclerView inside the PopupWindow
-            if (recyclerView == null) {
-                // Find the RecyclerView and initialize it only once
-                recyclerView = customView.findViewById(R.id.notificationsRecyclerView);
-                recyclerView.setLayoutManager(new LinearLayoutManager(this));
-                if (adapter == null) {
-                    adapter = new NotificationsAdapter(getNotificationItems());
-                }
-                recyclerView.setAdapter(adapter);
-            }
-        }
-
-        // Show the popup window anchored to the notification button
-        ImageButton notificationButton = findViewById(R.id.button_notifications);
-        notificationPopup.showAsDropDown(notificationButton, 0, 0);
-    }
-    private List<NotificationItem> getNotificationItems() {
-        List<NotificationItem> items = new ArrayList<>();
-        return items;
-    }
-    public void addNotification(NotificationItem newNotification) {
-        if (adapter != null) { // Check that adapter is not null
-            adapter.getNotificationItems().add(0, newNotification); // Add the new notification
-            adapter.notifyItemInserted(0); // Notify the adapter
-            recyclerView.scrollToPosition(0); // Scroll to the top of the RecyclerView
-
-        } else {
-            // Adapter is not initialized yet, handle this case
-        }
-    }
-    private int getWidthPanelNotification(){
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int screenWidth = displayMetrics.widthPixels;
-
-        return screenWidth / 2-40;
-    }
-
-
-
     private void showToast(String message){
         if (currentToast != null) {
-            currentToast.cancel(); // Tắt thông báo cũ nếu có
+            currentToast.cancel(); // turn off the notification
         }
         currentToast = Toast.makeText(this, message, Toast.LENGTH_LONG);
         currentToast.show();
     }
-
     private void setOnline() {
         databaseReference.child(current_uid).child("isOnline").setValue(1);
     }
@@ -448,7 +453,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Permissions.check(this, permissions, rationale, options, new PermissionHandler() {
             @Override
             public void onGranted() {
-                // Obtain the SupportMapFragment and get notified when the map is ready to be used.
                 SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                         .findFragmentById(R.id.fragment_container);
                 mapFragment.getMapAsync(MainActivity.this);
@@ -460,6 +464,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 callpermissionlistener();
             }
         });
+    }
+    private void checkNotificationEnabled() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            if (!notificationManager.areNotificationsEnabled()) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Cần Quyền Thông Báo")
+                        .setMessage("Ứng dụng này cần quyền để hiển thị thông báo. Vui lòng bật thông báo cho ứng dụng trong cài đặt hệ thống.")
+                        .setPositiveButton("Đến Cài Đặt", (dialog, which) -> {
+                            Intent intent = new Intent();
+                            intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+                            intent.putExtra("android.provider.extra.APP_PACKAGE", getPackageName());
+                            startActivity(intent);
+                        })
+                        .setNegativeButton("Hủy", (dialog, which) -> dialog.dismiss())
+                        .show();
+            }
+        }
     }
     @Override
     public void onBackPressed() {
@@ -482,8 +504,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         alert.setTitle("Exit");
         alert.show();
     }
-
-
     private void setupToolbarAndDrawer() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -513,14 +533,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             fab.setVisibility(View.VISIBLE);
         } else if (itemId == R.id.nav_profile) {
+            if (profileFragment == null) {
+                profileFragment = new ProfileFragment();
+            }
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new ProfileFragment())
+                    .replace(R.id.fragment_container, profileFragment)
                     .addToBackStack(null)
                     .commit();
             fab.setVisibility(View.GONE);
         } else if (itemId == R.id.nav_joiningc) {
+            if (joinCircleFragment == null) {
+                joinCircleFragment = new JoinCircleFragment();
+            }
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new JoinCircleFragment())
+                    .replace(R.id.fragment_container, joinCircleFragment)
                     .addToBackStack(null)
                     .commit();
             fab.setVisibility(View.GONE);
@@ -530,8 +556,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             i.putExtra(Intent.EXTRA_TEXT,"https://www.google.com/maps/@"+latLng.latitude+","+latLng.longitude+",17z");
             startActivity(i.createChooser(i,"Share using: "));
         } else if(itemId==R.id.nav_friend){
+            if (myCircleFragment == null) {
+                myCircleFragment = new MyCircleFragment();
+            }
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new MyCircleFragment())
+                    .replace(R.id.fragment_container, myCircleFragment)
                     .addToBackStack(null)
                     .commit();
             fab.setVisibility(View.GONE);
@@ -581,16 +610,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         user = auth.getCurrentUser();
         current_uid = user != null ? user.getUid() : "";
         databaseReference = FirebaseDatabase.getInstance().getReference("users");
+        notifiReference = FirebaseDatabase.getInstance().getReference("users").child(current_uid).child("notification");
         listFriend = new ListFriend(current_uid);
 
     }
-    private Users users;
     private DrawerLayout drawerLayout;
     private TextView nameView,emailView;
     private CircleImageView avatar;
     private FirebaseAuth auth;
     private FirebaseUser user;
-    private DatabaseReference databaseReference;
+    private DatabaseReference databaseReference,notifiReference;
     private GoogleMap mMap;
     private LocationRequest locationRequest;
     private AlertDialog.Builder builder;
@@ -609,4 +638,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private boolean check=false;
     private Marker currentUserMarker;
     private Map<String, Marker> friendMarkers = new HashMap<>();
+    private ProfileFragment profileFragment;
+    private JoinCircleFragment joinCircleFragment;
+    private MyCircleFragment myCircleFragment;
+    private Long lastNotificationTimestamp = null;
+
+
 }

@@ -1,14 +1,27 @@
 package com.nguyenquocthai.real_time_tracker.Model;
 
 public class NotificationItem {
+    private String userID;
     private String message;
-    private String timestamp;
-    private int iconResource; // Optional, if you want to show different icons for different notifications
+    private Long timestamp;
+    private String avatar; // Optional, if you want to show different icons for different notifications
 
-    public NotificationItem(String message, String timestamp, int iconResource) {
+    public NotificationItem() {
+    }
+
+    public NotificationItem(String userID, String message, Long timestamp, String avatar) {
+        this.userID = userID;
         this.message = message;
         this.timestamp = timestamp;
-        this.iconResource = iconResource;
+        this.avatar = avatar;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 
     public String getMessage() {
@@ -19,19 +32,19 @@ public class NotificationItem {
         this.message = message;
     }
 
-    public String getTimestamp() {
+    public Long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
     }
 
-    public int getIconResource() {
-        return iconResource;
+    public String getAvatar() {
+        return avatar;
     }
 
-    public void setIconResource(int iconResource) {
-        this.iconResource = iconResource;
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

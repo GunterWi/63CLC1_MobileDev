@@ -11,6 +11,7 @@ public class FCMNotificationService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         // Tạo một Intent để gửi thông tin đến MainActivity
+        // When u using app
         Intent intent = new Intent("com.yourapp.FCM_MESSAGE");
         intent.putExtra("userID", remoteMessage.getData().get("userID"));
         intent.putExtra("name", remoteMessage.getData().get("name"));

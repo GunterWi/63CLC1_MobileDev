@@ -37,17 +37,26 @@ public class AcceptShare {
         currentReference = FirebaseDatabase.getInstance().getReference().child("users").child(currentID).child("circle_members");
         loader.showloader();
         friendReference = FirebaseDatabase.getInstance().getReference().child("users").child(userID).child("circle_members");
-
-        CircleJoin join = new CircleJoin(userID); // friend
-        CircleJoin join1 = new CircleJoin(user.getUid()); // my
-        //set my current id people's code
-        currentReference.child(userID).setValue(join);
-        //set friend id my code
-        friendReference.child(currentID).setValue(join1)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(myactivity, "joined success", Toast.LENGTH_SHORT).show();
-                        loader.dismissloader();
+        checker =new CircleMemberChecker(userID);
+        checker.checkIfMember(userID, new CircleMemberChecker.CircleMemberCheckListener() {
+                    @Override
+                    public void onCheckComplete(boolean isMember) {
+                        if (isMember) {
+                            Toast.makeText(myactivity, "You are already friends", Toast.LENGTH_SHORT).show();
+                        }else {
+                            CircleJoin join = new CircleJoin(userID); // friend
+                            CircleJoin join1 = new CircleJoin(user.getUid()); // my
+                            //set my current id people's code
+                            currentReference.child(userID).setValue(join);
+                            //set friend id my code
+                            friendReference.child(currentID).setValue(join1)
+                                    .addOnCompleteListener(task -> {
+                                        if (task.isSuccessful()) {
+                                            Toast.makeText(myactivity, "joined success", Toast.LENGTH_SHORT).show();
+                                            loader.dismissloader();
+                                        }
+                                    });
+                        }
                     }
                 });
     }
@@ -64,4 +73,5 @@ public class AcceptShare {
     private FirebaseAuth auth;
     private FirebaseUser user;
     private ProgressbarLoader loader;
+    private CircleMemberChecker checker;
 }

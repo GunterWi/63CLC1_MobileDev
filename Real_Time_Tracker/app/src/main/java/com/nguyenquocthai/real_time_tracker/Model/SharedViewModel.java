@@ -1,4 +1,4 @@
-package com.nguyenquocthai.real_time_tracker;
+package com.nguyenquocthai.real_time_tracker.Model;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
