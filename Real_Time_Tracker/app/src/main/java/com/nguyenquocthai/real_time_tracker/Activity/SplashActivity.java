@@ -10,7 +10,6 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.nguyenquocthai.real_time_tracker.ProgressbarLoader;
 import com.nguyenquocthai.real_time_tracker.R;
 
 public class SplashActivity extends AppCompatActivity {

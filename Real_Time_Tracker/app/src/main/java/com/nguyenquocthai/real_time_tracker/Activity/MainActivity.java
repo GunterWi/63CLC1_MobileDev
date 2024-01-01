@@ -1,7 +1,5 @@
 package com.nguyenquocthai.real_time_tracker.Activity;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,10 +14,8 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -51,15 +47,15 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.nabinbhandari.android.permissions.PermissionHandler;
 import com.nabinbhandari.android.permissions.Permissions;
-import com.nguyenquocthai.real_time_tracker.AcceptShare;
+import com.nguyenquocthai.real_time_tracker.Service.AcceptShare;
 import com.nguyenquocthai.real_time_tracker.Adapter.NotificationsAdapter;
 import com.nguyenquocthai.real_time_tracker.Fragments.JoinCircleFragment;
 import com.nguyenquocthai.real_time_tracker.Fragments.MyCircleFragment;
 import com.nguyenquocthai.real_time_tracker.Fragments.ProfileFragment;
-import com.nguyenquocthai.real_time_tracker.ListFriend;
+import com.nguyenquocthai.real_time_tracker.Service.ListFriend;
 import com.nguyenquocthai.real_time_tracker.Model.NotificationItem;
 import com.nguyenquocthai.real_time_tracker.Model.Users;
-import com.nguyenquocthai.real_time_tracker.ProgressbarLoader;
+import com.nguyenquocthai.real_time_tracker.Utils.ProgressbarLoader;
 import com.nguyenquocthai.real_time_tracker.R;
 import com.nguyenquocthai.real_time_tracker.Model.SharedViewModel;
 import com.squareup.picasso.Callback;
@@ -84,15 +80,10 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -117,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onNewIntent(intent);
         setIntent(intent); // Cập nhật Intent hiện tại của Activity
     }
-
+    // get from MyCircleFragment
     private void handleIntentDataForMap() {
         SharedViewModel viewModel = new ViewModelProvider(this).get(SharedViewModel.class);
         viewModel.getLocationData().observe(this, latLng -> {
@@ -136,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
     }
+    // When u online
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) { // Get data when u using app
@@ -192,6 +184,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         alertDialogBuilder.setMessage(message).show();
     }
+    // When u click notification
     private void handleIntentData() {
         if (getIntent().getExtras() != null) { // Get data when u not using app
             String name = getIntent().getExtras().getString("name");
@@ -200,10 +193,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 showAlertDialog("Hey there! " + name + " would like to share their location with you ", userID);
             }
         }
-    }
-    private boolean isNewNotification(NotificationItem notification) {
-        // Kiểm tra xem timestamp của thông báo có mới hơn timestamp cuối cùng đã biết không
-        return lastNotificationTimestamp == null || notification.getTimestamp() > lastNotificationTimestamp;
     }
     private void setupNotificationsButton() {
         notificationButton = findViewById(R.id.button_notifications);
@@ -236,7 +225,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        recyclerView.setAdapter(adapter);
         recyclerView.setAdapter(adapter);
 
         // Now that the PopupWindow and RecyclerView are initialized, start listening for notifications

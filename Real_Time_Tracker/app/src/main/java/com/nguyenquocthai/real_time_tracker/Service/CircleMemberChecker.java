@@ -1,4 +1,4 @@
-package com.nguyenquocthai.real_time_tracker;
+package com.nguyenquocthai.real_time_tracker.Service;
 
 import androidx.annotation.NonNull;
 
@@ -11,10 +11,8 @@ import com.google.firebase.database.ValueEventListener;
 public class CircleMemberChecker {
 
     private DatabaseReference databaseReference;
-    private String currentUserId;
 
     public CircleMemberChecker(String currentUserId) {
-        this.currentUserId = currentUserId;
         this.databaseReference = FirebaseDatabase.getInstance().getReference("users").child(currentUserId).child("circle_members");
     }
 

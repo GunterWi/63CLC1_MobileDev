@@ -1,28 +1,16 @@
-package com.nguyenquocthai.real_time_tracker;
+package com.nguyenquocthai.real_time_tracker.Service;
 
 import static android.app.PendingIntent.getActivity;
 
 import android.app.Activity;
-import android.content.Context;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-
-import com.goodiebag.pinview.Pinview;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-import com.nguyenquocthai.real_time_tracker.Activity.MainActivity;
 import com.nguyenquocthai.real_time_tracker.Model.CircleJoin;
+import com.nguyenquocthai.real_time_tracker.Utils.ProgressbarLoader;
 
 public class AcceptShare {
 
@@ -37,12 +25,13 @@ public class AcceptShare {
         currentReference = FirebaseDatabase.getInstance().getReference().child("users").child(currentID).child("circle_members");
         loader.showloader();
         friendReference = FirebaseDatabase.getInstance().getReference().child("users").child(userID).child("circle_members");
-        checker =new CircleMemberChecker(userID);
+        checker =new CircleMemberChecker(currentID);
         checker.checkIfMember(userID, new CircleMemberChecker.CircleMemberCheckListener() {
                     @Override
                     public void onCheckComplete(boolean isMember) {
                         if (isMember) {
                             Toast.makeText(myactivity, "You are already friends", Toast.LENGTH_SHORT).show();
+                            loader.dismissloader();
                         }else {
                             CircleJoin join = new CircleJoin(userID); // friend
                             CircleJoin join1 = new CircleJoin(user.getUid()); // my

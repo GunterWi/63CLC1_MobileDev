@@ -1,32 +1,23 @@
 package com.nguyenquocthai.real_time_tracker.Adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.nguyenquocthai.real_time_tracker.Fragments.JoinCircleFragment;
-import com.nguyenquocthai.real_time_tracker.Fragments.MyCircleFragment;
-import com.nguyenquocthai.real_time_tracker.Fragments.ProfileFragment;
-import com.nguyenquocthai.real_time_tracker.MembersDiffCallback;
+import com.nguyenquocthai.real_time_tracker.Model.MembersDiffCallback;
 import com.nguyenquocthai.real_time_tracker.Model.Users;
 import com.nguyenquocthai.real_time_tracker.R;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;

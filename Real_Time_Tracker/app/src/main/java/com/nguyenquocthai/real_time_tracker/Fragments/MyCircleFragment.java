@@ -1,6 +1,5 @@
 package com.nguyenquocthai.real_time_tracker.Fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -17,9 +16,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
-import com.nguyenquocthai.real_time_tracker.Activity.MainActivity;
 import com.nguyenquocthai.real_time_tracker.Adapter.MembersAdapter;
-import com.nguyenquocthai.real_time_tracker.ListFriend;
+import com.nguyenquocthai.real_time_tracker.Service.ListFriend;
 import com.nguyenquocthai.real_time_tracker.Model.Users;
 import com.nguyenquocthai.real_time_tracker.R;
 import com.nguyenquocthai.real_time_tracker.Model.SharedViewModel;

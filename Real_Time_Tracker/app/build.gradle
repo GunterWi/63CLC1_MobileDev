@@ -55,7 +55,7 @@ dependencies {
     //google map
     implementation 'com.google.android.gms:play-services-location:19.0.0'
     implementation 'com.google.android.gms:play-services-maps:18.2.0'
-    // ok http
+    // ok http call firebase
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
 
     //circle image
@@ -78,7 +78,7 @@ dependencies {
     //permission
     implementation 'com.nabinbhandari.android:permissions:3.8'
 
-    //view model
+    // view model, send data for activity
     implementation "androidx.lifecycle:lifecycle-viewmodel:2.3.1"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.1"

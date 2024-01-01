@@ -29,7 +29,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.nguyenquocthai.real_time_tracker.Model.Users;
-import com.nguyenquocthai.real_time_tracker.ProgressbarLoader;
+import com.nguyenquocthai.real_time_tracker.Utils.ProgressbarLoader;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 

@@ -1,4 +1,4 @@
-package com.nguyenquocthai.real_time_tracker;
+package com.nguyenquocthai.real_time_tracker.Service;
 
 import android.content.Intent;
 
@@ -17,4 +17,5 @@ public class FCMNotificationService extends FirebaseMessagingService {
         intent.putExtra("name", remoteMessage.getData().get("name"));
         // Gửi Broadcast
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-    }}
+    }
+}

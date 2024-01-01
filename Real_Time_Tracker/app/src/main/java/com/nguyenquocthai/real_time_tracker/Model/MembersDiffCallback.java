@@ -1,8 +1,7 @@
-package com.nguyenquocthai.real_time_tracker;
+package com.nguyenquocthai.real_time_tracker.Model;
 
 import androidx.recyclerview.widget.DiffUtil;
 
-import com.nguyenquocthai.real_time_tracker.Model.Users;
 
 import java.util.List;
 

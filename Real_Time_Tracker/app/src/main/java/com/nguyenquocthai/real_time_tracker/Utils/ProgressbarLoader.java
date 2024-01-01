@@ -1,4 +1,4 @@
-package com.nguyenquocthai.real_time_tracker;
+package com.nguyenquocthai.real_time_tracker.Utils;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
