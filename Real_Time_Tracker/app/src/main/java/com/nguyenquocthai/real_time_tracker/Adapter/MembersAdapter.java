@@ -43,7 +43,7 @@ public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.MemberVi
     @Override
     public void onBindViewHolder(@NonNull MemberViewHolder holder, int position) {
         Users userobj = nameList.get(position);
-        holder.nametxt.setText(userobj.getFirstname());
+        holder.nametxt.setText(userobj.getLastname()+" "+userobj.getFirstname());
         /*String strobj = namelist.get(position);
         holder.nametxt.setText(strobj);*/
         if(userobj.getIsOnline()==1){

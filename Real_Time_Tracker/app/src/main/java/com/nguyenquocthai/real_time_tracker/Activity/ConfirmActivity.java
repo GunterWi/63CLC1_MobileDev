@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -103,6 +104,7 @@ public class ConfirmActivity extends AppCompatActivity {
     //set click image
     private void setupImageViewListener() {
         circleImageView.setOnClickListener(v -> {
+            mediaPlayer.start();
             Log.d("ImageViewClick", "CircleImageView clicked");
             Intent i = new Intent(Intent.ACTION_GET_CONTENT);
             i.setType("image/*");
@@ -111,7 +113,10 @@ public class ConfirmActivity extends AppCompatActivity {
         });
     }
     private void setupConfirmButtonListener() {
-        confirm.setOnClickListener(v -> signupListener());
+        confirm.setOnClickListener(v -> {
+            mediaPlayer.start();
+            signupListener();
+        });
     }
 
     private void signupListener() {
@@ -244,7 +249,7 @@ public class ConfirmActivity extends AppCompatActivity {
         reference = FirebaseDatabase.getInstance().getReference("users");
         storage = FirebaseStorage.getInstance().getReference("users");
         loader = new ProgressbarLoader(ConfirmActivity.this);
-
+        mediaPlayer = MediaPlayer.create(this,R.raw.click);
     }
 
     private EditText readEmail;
@@ -263,4 +268,6 @@ public class ConfirmActivity extends AppCompatActivity {
     private ProgressbarLoader loader;
     private ActivityResultLauncher<Intent> pickImageLauncher;
     private ActivityResultLauncher<Intent> cropImageLauncher;
+    private MediaPlayer mediaPlayer;
+
 }

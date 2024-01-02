@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.location.Location;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -47,6 +48,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.nabinbhandari.android.permissions.PermissionHandler;
 import com.nabinbhandari.android.permissions.Permissions;
+import com.nguyenquocthai.real_time_tracker.Fragments.AboutFragment;
 import com.nguyenquocthai.real_time_tracker.Service.AcceptShare;
 import com.nguyenquocthai.real_time_tracker.Adapter.NotificationsAdapter;
 import com.nguyenquocthai.real_time_tracker.Fragments.JoinCircleFragment;
@@ -168,11 +170,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
             switch (which){
                 case DialogInterface.BUTTON_POSITIVE:
+                    mediaPlayer.start();
                     AcceptShare acceptShare = new AcceptShare(userID,MainActivity.this);
                     acceptShare.Execute();
                     break;
 
                 case DialogInterface.BUTTON_NEGATIVE:
+                    mediaPlayer.start();
                     //No button clicked
                     break;
             }
@@ -197,6 +201,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void setupNotificationsButton() {
         notificationButton = findViewById(R.id.button_notifications);
         notificationButton.setOnClickListener(v -> {
+            mediaPlayer.start();
             if (notificationPopup == null) {
                 initNotificationPopup();
             }
@@ -221,6 +226,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         adapter.setOnNotificationItemClickListener(new NotificationsAdapter.OnNotificationItemClickListener() {
             @Override
             public void onNotificationItemClick(NotificationItem item) {
+                mediaPlayer.start();
                 showAlertDialog(item.getMessage(), item.getUserID());
             }
         });
@@ -297,6 +303,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void initLocationFab() {
         fab = findViewById(R.id.fab_current_location);
         fab.setOnClickListener(view -> {
+            mediaPlayer.start();
             if(mMap != null && latLng != null){
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15F));
             } else {
@@ -375,7 +382,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         LatLng friendLatLng = new LatLng(user.getLatitude(), user.getLongitude());
                         Marker marker = friendMarkers.get(user.getId());
                         if (marker == null) {
-                            marker = mMap.addMarker(new MarkerOptions().position(friendLatLng).title(user.getFirstname() + " " + user.getLastname()));
+                            marker = mMap.addMarker(new MarkerOptions().position(friendLatLng).title(user.getLastname() + " " + user.getFirstname()));
                             friendMarkers.put(user.getId(), marker);
                         } else {
                             marker.setPosition(friendLatLng);
@@ -514,13 +521,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.closeDrawer(GravityCompat.START);
         int itemId = item.getItemId();
         if (itemId == R.id.nav_home) { // MainActivity
+            mediaPlayer.start();
             Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-            if (currentFragment instanceof ProfileFragment || currentFragment instanceof JoinCircleFragment || currentFragment instanceof MyCircleFragment) {
+            if (currentFragment instanceof ProfileFragment || currentFragment instanceof JoinCircleFragment || currentFragment instanceof MyCircleFragment || currentFragment instanceof AboutFragment) {
                 // Remove the current fragment to show the MainActivity's content
                 getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             }
             fab.setVisibility(View.VISIBLE);
         } else if (itemId == R.id.nav_profile) {
+            mediaPlayer.start();
             if (profileFragment == null) {
                 profileFragment = new ProfileFragment();
             }
@@ -530,6 +539,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .commit();
             fab.setVisibility(View.GONE);
         } else if (itemId == R.id.nav_joiningc) {
+            mediaPlayer.start();
             if (joinCircleFragment == null) {
                 joinCircleFragment = new JoinCircleFragment();
             }
@@ -539,11 +549,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .commit();
             fab.setVisibility(View.GONE);
         } else if (itemId == R.id.nav_invite) {
+            mediaPlayer.start();
             Intent i = new Intent(Intent.ACTION_SEND);
             i.setType("text/lain");
             i.putExtra(Intent.EXTRA_TEXT,"https://www.google.com/maps/@"+latLng.latitude+","+latLng.longitude+",17z");
             startActivity(i.createChooser(i,"Share using: "));
         } else if(itemId==R.id.nav_friend){
+            mediaPlayer.start();
             if (myCircleFragment == null) {
                 myCircleFragment = new MyCircleFragment();
             }
@@ -552,7 +564,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .addToBackStack(null)
                     .commit();
             fab.setVisibility(View.GONE);
+        } else if (itemId == R.id.nav_about) {
+            mediaPlayer.start();
+            if (aboutFragment == null) {
+                aboutFragment = new AboutFragment();
+            }
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, aboutFragment)
+                    .addToBackStack(null)
+                    .commit();
         } else if (itemId == R.id.nav_logout) {
+            mediaPlayer.start();
             if (auth.getCurrentUser() != null) {
                 if (fusedLocationProviderClient != null && locationCallback != null) {
                     fusedLocationProviderClient.removeLocationUpdates(locationCallback);
@@ -600,7 +622,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         databaseReference = FirebaseDatabase.getInstance().getReference("users");
         notifiReference = FirebaseDatabase.getInstance().getReference("users").child(current_uid).child("notification");
         listFriend = new ListFriend(current_uid);
-
+        mediaPlayer = MediaPlayer.create(this,R.raw.click);
     }
     private DrawerLayout drawerLayout;
     private TextView nameView,emailView;
@@ -629,7 +651,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ProfileFragment profileFragment;
     private JoinCircleFragment joinCircleFragment;
     private MyCircleFragment myCircleFragment;
-    private Long lastNotificationTimestamp = null;
-
+    private AboutFragment aboutFragment;
+    private MediaPlayer mediaPlayer;
 
 }

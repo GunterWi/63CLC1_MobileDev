@@ -3,6 +3,7 @@ package com.nguyenquocthai.real_time_tracker.Activity;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
@@ -28,6 +29,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void setRegisterButtonListener() {
         registerButton.setOnClickListener(v -> {
+            mediaPlayer.start();
             String email = emailEditText.getText().toString();
             String password = passwordEditText.getText().toString();
             String firstName = firstNameEditText.getText().toString();
@@ -50,7 +52,10 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void setLoginTextViewListener() {
-        loginTextView.setOnClickListener(v -> startActivity(new Intent(this, LoginActivity.class)));
+        loginTextView.setOnClickListener(v -> {
+            mediaPlayer.start();
+            startActivity(new Intent(this, LoginActivity.class));
+        });
     }
 
     private void registerUser(String email, String password, String firstName, String lastName) {
@@ -95,6 +100,7 @@ public class RegisterActivity extends AppCompatActivity {
         registerButton = findViewById(R.id.signup_button);
         loginTextView = findViewById(R.id.signtolog_txt);
         auth = FirebaseAuth.getInstance();
+        mediaPlayer = MediaPlayer.create(this,R.raw.click);
     }
 
     private EditText emailEditText, passwordEditText, firstNameEditText, lastNameEditText;
@@ -102,5 +108,6 @@ public class RegisterActivity extends AppCompatActivity {
     private TextView loginTextView;
     private FirebaseAuth auth;
     private boolean isRegisterButtonClicked = false;
+    private MediaPlayer mediaPlayer;
 
 }

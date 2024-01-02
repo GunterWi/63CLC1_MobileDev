@@ -1,5 +1,6 @@
 package com.nguyenquocthai.real_time_tracker.Fragments;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -47,7 +48,10 @@ public class JoinCircleFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_join_circle, container, false);
         initializeViews(view);
         getMyProfile();
-        joinbtn.setOnClickListener(v -> joinbtnlistener());
+        joinbtn.setOnClickListener(v -> {
+            mediaPlayer.start();
+            joinbtnlistener();
+        });
         return view;
     }
     private void getMyProfile(){
@@ -168,6 +172,7 @@ public class JoinCircleFragment extends Fragment {
         currentID = user != null ? user.getUid() : "";
         countReference= FirebaseDatabase.getInstance().getReference().child("users");
         databaseReference= FirebaseDatabase.getInstance().getReference().child("users");
+        mediaPlayer = MediaPlayer.create(getActivity(),R.raw.click);
     }
     private String currentID;
     private Pinview pinview;
@@ -178,4 +183,6 @@ public class JoinCircleFragment extends Fragment {
     private ProgressbarLoader loader;
     private int id;
     private Users users;
+    private MediaPlayer mediaPlayer;
+
 }

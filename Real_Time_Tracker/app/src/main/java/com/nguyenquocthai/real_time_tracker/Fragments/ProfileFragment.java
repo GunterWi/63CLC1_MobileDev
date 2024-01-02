@@ -2,6 +2,7 @@ package com.nguyenquocthai.real_time_tracker.Fragments;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -68,7 +69,10 @@ public class ProfileFragment extends Fragment {
         setProfileDataListener();
         activityResultNew();
         setupImageViewListener();
-        btnSave.setOnClickListener(v -> saveProfile());
+        btnSave.setOnClickListener(v -> {
+            mediaPlayer.start();
+            saveProfile();
+        });
         return view;
     }
 
@@ -78,7 +82,7 @@ public class ProfileFragment extends Fragment {
     private void setProfileDataListener() {
         loader.showloader();
         //addValueEventListener() keep listening to query or database reference it is attached to.
-        reference.child(current_uid).addValueEventListener(new ValueEventListener() {
+        reference.child(current_uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Log.d("ProfileFragment", "Data changed");
@@ -129,6 +133,7 @@ public class ProfileFragment extends Fragment {
     }
     private void setupImageViewListener() {
         imageView.setOnClickListener(v -> {
+            mediaPlayer.start();
             Log.d("ImageViewClick", "CircleImageView clicked");
             isImageBeingUpdated = true;
             Intent i = new Intent(Intent.ACTION_GET_CONTENT);
@@ -198,6 +203,7 @@ public class ProfileFragment extends Fragment {
             }
             reference.child(current_uid).updateChildren(update).addOnCompleteListener(task -> {
                 Toast.makeText(getActivity(), "Profile Updated", Toast.LENGTH_SHORT).show();
+                fullnameTextView.setText(lastnameEditText.getText().toString()+" "+firstnameEditText.getText().toString());
             });
             loader.dismissloader();
         }else{
@@ -228,6 +234,7 @@ public class ProfileFragment extends Fragment {
         loader = new ProgressbarLoader(getActivity());
         reference = FirebaseDatabase.getInstance().getReference("users");
         storage = FirebaseStorage.getInstance().getReference("users");
+        mediaPlayer = MediaPlayer.create(getActivity(),R.raw.click);
     }
     private TextView fullnameTextView;
     private TextView friendTextView,codeTextView;
@@ -245,5 +252,6 @@ public class ProfileFragment extends Fragment {
     private ActivityResultLauncher<Intent> pickImageLauncher;
     private ActivityResultLauncher<Intent> cropImageLauncher;
     private boolean isImageBeingUpdated = false;
+    private MediaPlayer mediaPlayer;
 
 }

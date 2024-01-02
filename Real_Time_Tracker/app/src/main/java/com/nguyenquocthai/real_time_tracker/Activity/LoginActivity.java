@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
@@ -30,25 +31,10 @@ public class LoginActivity extends AppCompatActivity {
         loginAttempts = preferences.getInt("loginAttempts", 0);
         lastLoginAttemptTime = preferences.getLong("lastLoginAttemptTime", 0);
     }
-    private void showToast(String message){
-        if (currentToast != null) {
-            currentToast.cancel();
-        }
-        currentToast = Toast.makeText(this, message, Toast.LENGTH_LONG);
-        currentToast.show();
-    }
-
-    private void initializeViews() {
-        emailEditText = findViewById(R.id.edittext_email);
-        passwordEditText = findViewById(R.id.edittext_password);
-        loginButton = findViewById(R.id.login_button);
-        createAccountTextView = findViewById(R.id.logtosign);
-        loader = new ProgressbarLoader(this);
-        auth = FirebaseAuth.getInstance();
-    }
 
     private void setupLoginButtonListener() {
         loginButton.setOnClickListener(v -> {
+            mediaPlayer.start();
             String email = emailEditText.getText().toString();
             String password = passwordEditText.getText().toString();
             loginUser(email, password);
@@ -57,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void setupCreateAccountTextViewListener() {
         createAccountTextView.setOnClickListener(v -> {
+            mediaPlayer.start();
             startActivity(new Intent(this, RegisterActivity.class));
             finish();
         });
@@ -138,6 +125,23 @@ public class LoginActivity extends AppCompatActivity {
         editor.putLong("lastLoginAttemptTime", 0);
         editor.apply();
     }
+    private void showToast(String message){
+        if (currentToast != null) {
+            currentToast.cancel();
+        }
+        currentToast = Toast.makeText(this, message, Toast.LENGTH_LONG);
+        currentToast.show();
+    }
+
+    private void initializeViews() {
+        emailEditText = findViewById(R.id.edittext_email);
+        passwordEditText = findViewById(R.id.edittext_password);
+        loginButton = findViewById(R.id.login_button);
+        createAccountTextView = findViewById(R.id.logtosign);
+        loader = new ProgressbarLoader(this);
+        auth = FirebaseAuth.getInstance();
+        mediaPlayer = MediaPlayer.create(this,R.raw.click);
+    }
     private EditText emailEditText, passwordEditText;
     private Button loginButton;
     private TextView createAccountTextView;
@@ -146,5 +150,6 @@ public class LoginActivity extends AppCompatActivity {
     private Toast currentToast = null;
     private int loginAttempts = 0;
     private long lastLoginAttemptTime = 0;
+    private MediaPlayer mediaPlayer;
 
 }

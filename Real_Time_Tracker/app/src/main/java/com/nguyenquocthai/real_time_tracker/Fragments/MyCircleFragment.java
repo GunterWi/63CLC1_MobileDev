@@ -1,5 +1,6 @@
 package com.nguyenquocthai.real_time_tracker.Fragments;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -34,6 +35,7 @@ public class MyCircleFragment extends Fragment {
         recyclerView= view.findViewById(R.id.myCircleRecyclerView);
         auth= FirebaseAuth.getInstance();
         user= auth.getCurrentUser();
+        mediaPlayer = MediaPlayer.create(getActivity(),R.raw.click);
         nameList= new ArrayList<>();
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
@@ -48,12 +50,12 @@ public class MyCircleFragment extends Fragment {
             @Override
             public void DataIsLoaded(List<Users> users) {
                 adapter.updateMembersList(users);
-
             }
         });
         adapter.setOnMemberClickListener(new MembersAdapter.OnMemberClickListener() {
             @Override
             public void onMemberClick(Users user) {
+                mediaPlayer.start();
                 SharedViewModel viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
                 viewModel.setLocationData(new LatLng(user.getLatitude(), user.getLongitude()));
                 getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -72,7 +74,9 @@ public class MyCircleFragment extends Fragment {
     private FirebaseAuth auth;
     private FirebaseUser user;
     private List<Users> nameList;
-    DatabaseReference databaseReference, currentreference;
+    //DatabaseReference databaseReference, currentreference;
     private ListFriend listFriend;
+    private MediaPlayer mediaPlayer;
+
 
 }
