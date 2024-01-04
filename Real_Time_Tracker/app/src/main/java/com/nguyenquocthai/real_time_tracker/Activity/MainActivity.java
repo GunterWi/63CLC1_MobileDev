@@ -580,6 +580,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     fusedLocationProviderClient.removeLocationUpdates(locationCallback);
                 }
                 FirebaseMessaging.getInstance().deleteToken().addOnCompleteListener(task -> {
+                    databaseReference.child(current_uid).child("fcmToken").removeValue();
                     setOffline();
                     auth.signOut();
                     startActivity(new Intent(MainActivity.this, LoginActivity.class));
