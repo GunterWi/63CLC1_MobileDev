@@ -402,7 +402,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         update.put("longitude", lon);
         databaseReference.child(current_uid).updateChildren(update);
     }
-
+    // Display friend's image
     private void getMarkerBitmapFromView(String imageUrl, Marker markerToUpdate) {
         View customMarkerView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_custom_marker, null);
         CircleImageView markerImageView = customMarkerView.findViewById(R.id.user_marker_icon);

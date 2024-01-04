@@ -8,7 +8,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class CircleMemberChecker {
+public class CircleMemberChecker { //
 
     private DatabaseReference databaseReference;
 

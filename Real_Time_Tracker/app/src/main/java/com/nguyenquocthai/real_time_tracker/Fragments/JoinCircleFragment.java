@@ -106,7 +106,7 @@ public class JoinCircleFragment extends Fragment {
             }
         });
     }
-
+    // upload firebase
     private void addNotification(String broId,String message,String avatar) {
 
         countReference.child(broId).child("notification").addListenerForSingleValueEvent(new ValueEventListener() {
